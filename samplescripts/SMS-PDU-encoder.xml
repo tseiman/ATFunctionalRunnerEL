@@ -1,0 +1,248 @@
+<atrun>
+	<head>
+		<name>UI interactSample</name>
+		<description>Short UI interact sample script</description>
+		<author>TS</author>
+		<date>2018-08-06 17:49:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+
+		<io>
+			<input type="text" name="SMSC" inputcheck="^\+[0-9]+$" caption="SMSC">+491710760000</input>
+			<input type="text" name="RECEIVER" inputcheck="^\+[0-9]+$" caption="Receiver">+4412345678</input>
+			<input type="text" name="MESSAGE" inputcheck="^.+$" caption="Message">Hi There</input>
+			
+			
+			<output type="text" name="result" caption="Result">0</output>
+		</io>
+	</client>
+	<server>
+
+		<script>	<![CDATA[  
+		
+		
+	const INTERNATIONAL_NUMBER_ENCODING = "91";
+	const MESSAGE_FLAGS = "25"; // see http://www.nobbi.com/sms_pdu.html
+	const MESSAGE_REFERENCE_NR = "00";
+	const PROTOCOL_IDENT = "00";
+	const DATA_CODING_SCHEME = "00";
+
+	var hexChar = ["0", "1", "2", "3", "4", "5", "6", "7","8", "9", "A", "B", "C", "D", "E", "F"];
+
+	var sevenbitdefault = new Array('@', '£', '$', '¥', 'è', 'é', 'ù', 'ì', 'ò', 'Ç', '\n', 'Ø', 'ø', '\r','Å', 'å','\u0394', '_', '\u03a6', '\u0393', '\u039b', '\u03a9', '\u03a0','\u03a8', '\u03a3', '\u0398', '\u039e','€', 'Æ', 'æ', 'ß', 'É', ' ', '!', '"', '#', '¤', '%', '&', '\'', '(', ')','*', '+', ',', '-', '.', '/', '0', '1', '2', '3', '4', '5', '6', '7','8', '9', ':', ';', '<', '=', '>', '?', '¡', 'A', 'B', 'C', 'D', 'E','F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S','T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'Ä', 'Ö', 'Ñ', 'Ü', '\xA7', '¿', 'a','b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o','p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'ä', 'ö', 'ñ','ü', 'à');
+
+
+		
+	function byteToHex(b) {
+	  return hexChar[(b >> 4) & 0x0f] + hexChar[b & 0x0f];
+	}
+
+	function isEven(n) {
+	  n = Number(n);
+	  return n === 0 || !!(n && !(n%2));
+	}
+
+	function encodeSMSCNumber(numberStr) {
+	    var result = numberStr.replace( /\+/,"");
+	    if(! isEven(result.length)) {result = result + "F"; }
+	    
+	    var resultNetworkOrder = "";
+	    
+	    for(var i = 0; i < result.length; i = i + 2) {
+	        resultNetworkOrder = resultNetworkOrder + result.charAt(i+1) + result.charAt(i);
+	    }
+	    resultNetworkOrder = INTERNATIONAL_NUMBER_ENCODING + resultNetworkOrder;
+	    resultNetworkOrder = byteToHex(resultNetworkOrder.length / 2) + resultNetworkOrder;
+
+	    return resultNetworkOrder;
+	}
+
+
+	function encodeRecNumber(numberStr) {
+	    var result = numberStr.replace( /\+/,"");
+	    if(! isEven(result.length)) {result = result + "F"; }
+	    
+	    var resultNetworkOrder = "";
+	    
+	    for(var i = 0; i < result.length; i = i + 2) {
+	        resultNetworkOrder = resultNetworkOrder + result.charAt(i+1) + result.charAt(i);
+	    }
+	    resultNetworkOrder = INTERNATIONAL_NUMBER_ENCODING + resultNetworkOrder;
+	    resultNetworkOrder = byteToHex(result.length) + resultNetworkOrder;
+
+	    return resultNetworkOrder;
+	}
+
+	function intToHex(i) {
+	  var sHex = "0123456789ABCDEF";	
+	  h = ""; 
+	  i = parseInt(i,10);	
+	  for(j = 0; j <= 3; j++)
+	  {
+	    h += sHex.charAt((i >> (j * 8 + 4)) & 0x0F) +
+	         sHex.charAt((i >> (j * 8)) & 0x0F);
+	  }
+	  return h.substring(0,2);
+	}
+
+	function getSevenBit(character) {//sp
+
+		for(var i=0;i<sevenbitdefault.length;i++)
+		{
+			if(sevenbitdefault[i] == character)
+			{
+				return i;
+			}
+		}
+		console.log("No 7 bit char for " + character);
+		return 0;
+	}
+
+	// function te convert a bit string into a integer
+	function binToInt(x) { //sp
+
+		var total = 0;	
+		var power = parseInt(x.length)-1;	
+
+
+
+
+		for(var i=0;i<x.length;i++)
+		{
+			if(x.charAt(i) == '1')
+			{
+			 total = total +Math.pow(2,power);
+			}
+			power --;
+		}
+		return total;
+	}
+
+	// function to convert a integer into a bit String
+	function intToBin(x,size) { //sp
+
+		var base = 2;
+		var num = parseInt(x,10);
+		var bin = num.toString(base);
+		for(var i=bin.length;i<size;i++)
+		{
+			bin = "0" + bin;
+		}
+		return bin;
+	}
+
+	function encodeMessage(message) {
+	        
+	    var output = "";
+	    var octetFirst = "";
+	    var octetSecond = ""; 
+		var userDataSize = intToHex(message.length);
+
+		for(var i=0;i<=message.length +1;i++) {
+			
+			if(i==message.length) {
+				if (octetSecond !== "") { // AJA Fix overshoot
+					output = output + "" + (intToHex(binToInt(octetSecond)));
+				}
+				break;
+			} 
+	// console.log(getSevenBit(message.charAt(i)));
+			var current = intToBin(getSevenBit(message.charAt(i)),7);
+			
+			var currentOctet = 0;
+			
+			if(i!==0 && i%8!==0) {
+				octetFirst = current.substring(7-(i)%8);
+				currentOctet = octetFirst + octetSecond;	//put octet parts together
+				
+				output = output + "" + (intToHex(binToInt(currentOctet)));
+				octetSecond = current.substring(0,7-(i)%8);	//set net second octet
+			} else {
+					octetSecond = current.substring(0,7-(i)%8);
+			}	
+			
+		}    
+		
+		return output;
+	    
+	}
+	
+	var inputval = {};
+	inputval["MESSAGE"] = "Hi There";
+	inputval["SMSC"] = "+491710760000";
+	inputval["RECEIVER"] = "+4412345678";
+
+
+	function calculateResult() {
+
+		let pdu_msg = encodeMessage(inputval["MESSAGE"]);
+		let pdu = encodeSMSCNumber(inputval["SMSC"]) + 
+        	MESSAGE_FLAGS + 
+        	MESSAGE_REFERENCE_NR +
+        	encodeRecNumber(inputval["RECEIVER"]) +
+        	PROTOCOL_IDENT +
+        	DATA_CODING_SCHEME +
+        	intToHex(inputval["MESSAGE"].length + 1) +
+       		pdu_msg;
+
+			updateTextIO("result", pdu);
+	}
+		
+	getInputEvent(function( data ) {
+			if(data.valid) {
+				inputval[data.input] = data.value;
+				calculateResult();
+//				if(inputval["testin"] !== undefined && inputval["testin2"] !== undefined)	{ calculateResult(); }
+			}
+	});
+
+/*
+
+var msg = "Testtext:€";
+var pdu_msg = encodeMessage(msg);
+
+
+var pdu = encodeSMSCNumber("+491722270333") + 
+        MESSAGE_FLAGS + 
+        MESSAGE_REFERENCE_NR +
+        encodeRecNumber("+491721234567") +
+        PROTOCOL_IDENT +
+        DATA_CODING_SCHEME +
+        intToHex(msg.length + 1) +
+        pdu_msg;
+
+
+
+console.log(pdu);
+
+//  079194712272303325000C9194711232547600000BD4F29C4E2FE3E9BA4D19
+//  079194712272303325000C9194711232547600000BD4F29C4E2FE3E9BA0D
+//  0791947122723033250007919471123254F600000BD4F29C4E2FE3E9BA0D
+		
+		
+		*/
+		
+		
+		
+		
+		
+		function testEvent() {
+			setTimeout(function() {
+			testEvent();
+			}, 1000);
+		}
+		
+		testEvent();
+		
+		
+		]]></script>
+
+
+	</server>
+
+
+
+</atrun>

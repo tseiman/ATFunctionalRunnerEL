@@ -1,0 +1,260 @@
+html, body {
+	/*	overflow: hidden; */
+	margin: 0px;
+	padding: 0px;
+	background-color: #f0f0f0;
+	font-family: arial;
+	height: 100%;
+	overflow-x: hidden;
+}
+
+#logtext {
+	background-color: rgba(237, 255, 255, .5);
+	box-sizing: border-box;
+	border-radius: 2px;
+	color: #333;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	display: block;
+	float: none;
+	font-size: 14px;
+	border: 1px solid #ccc;
+	padding: 6px 10px;
+	left: 20px;
+	right: 20px;
+	overflow-y: scroll;
+	height: 200px;
+	line-height: 1.4;
+	position: fixed;
+	bottom: 10px;
+	font-family: "Letter Gothic", monospace;
+}
+
+#container {
+	height: 100%;
+}
+
+.logLineSpan {
+	display: block;
+	border-bottom: 1px solid rgba(0, 0, 0, .1);
+}
+
+.logLineSpanNorm {
+	color: #000;
+}
+
+.logLineSpanSystem {
+	color: #f00;
+}
+.logLineSpanWarn {
+	color: #f00	;
+	font-weight: bolder;
+}
+.logLineSpanIO {
+	color: #009d00	;
+}
+
+.logLineSpanInfo {
+	color: #999;
+}
+
+#AppHeader {
+	margin-top: 0px;
+	padding: 5px;
+}
+
+#fileloaderWrapper input[type="file"] {
+	position: absolute;
+	top: -1000px;
+}
+
+/***** Example custom styling *****/
+#fileloaderWrapper {
+	/*    border: 2px solid #AAA;
+    border-radius: 4px;
+    padding: 2px 5px;
+    background: #DDD;
+    display: inline-block;
+	*/
+	margin: 2px;
+	position: absolute;
+	right: 20px;
+	/*    top: 12px;
+     -ms-transform: scale(1.5);  
+  -webkit-transform: scale(1.5); 
+  transform: scale(1.5);
+  */
+}
+/*
+#fileloaderWrapperl:hover {
+    background: #CCC;
+}
+#fileloaderWrapperl:active {
+    background: #CCF;
+}
+
+#fileloaderWrapper :invalid + span {
+    color: #A44;
+}
+#fileloaderWrapper :valid + span {
+    color: #fff;
+}
+*/
+#fileloaderWrapper span {
+	font-size: 1em;
+	top: -3px;
+}
+
+#fileloaderWrapper span:hover {
+	font-size: 1em;
+	top: -3px;
+	color: #faa;
+}
+
+.appindicators {
+	/*    border: 2px solid #AAA;
+    border-radius: 4px;
+    padding: 2px 5px;
+    background: #DDD;
+    display: inline-block;
+	*/
+	margin: 2px;
+	position: absolute;
+	/*
+    right: 20px;
+    top: 1px;
+    */
+	-ms-transform: scale(1.5); /* IE 9 */
+	-webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+	transform: scale(1.5);
+}
+
+.appindicator-neutral {
+	color: white;
+}
+
+.appindicator-green {
+	color: greenyellow;
+}
+
+#indicator {
+	padding: 5px;
+	margin-left: 20px;
+	border-collapse: collapse;
+	width: 95%;
+	margin-bottom: 20px;
+}
+
+#indicator, th, td {
+	border: 2px solid black;
+	text-align: center;
+	padding: 2px; 
+}
+
+
+.indicator-NOT_INITIALIZED {
+	background-color: transparent;
+}
+.indicator-INDICATOR_UNKNOWN {
+	background-color: rgba(255,255,0,.3);
+}
+.indicator-INDICATOR_FAILED {
+	background-color: rgba(255,0,0,.3);
+}
+.indicator-INDICATOR_OK {
+	background-color: rgba(0,255,0,.3);
+}
+
+
+
+.appexec {
+	right: 40px;
+	-ms-transform: scale(1.5); /* IE 9 */
+	-webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+	transform: scale(1.5);
+	float: right;
+	top:  3px;
+	
+	margin-right: 10px!important;
+
+}
+.appexec:hover {	
+	color: #faa;
+}
+
+
+#seperator-appexec {
+	margin-right: 20px;
+	margin-left: 20px;
+	right: 40px;
+	-ms-transform: scale(1.5); /* IE 9 */
+	-webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+	transform: scale(1.5);
+	float: right;
+	top:  3px;
+	
+}
+
+#seperator-appexec2 {
+	margin-right: 20px;
+	margin-left: 20px;
+	right: 40px;
+	-ms-transform: scale(1.5); /* IE 9 */
+	-webkit-transform: scale(1.5); /* Chrome, Safari, Opera */
+	transform: scale(1.5);
+	float: right;
+	top:  3px;
+	
+}
+
+
+#server-start-exec {
+	
+}
+
+
+
+.chart-wrapper {
+	display: inline-block;
+	position: relative;
+	height: 20vh;
+	width: 46vw;
+	background-color: rgba(255,255,255,.8);
+	margin: 20px;
+}
+
+
+.input-wrap {
+	margin-left: 20px;
+	display:  inline-block;
+}
+
+.input-wrap > input {
+	margin-left: 20px;
+	margin-bottom: 10px;
+}
+
+.output-wrap {
+	margin-left: 20px;
+	margin-bottom: 10px;
+	font-weight: bold;
+	display:  inline-block;
+}
+.output-wrap > span {
+	font-weight: normal;
+}
+
+.dragable-icon {
+	font-size: 3em!important;
+text-shadow: 2px 8px 6px rgba(0,0,0,0.2),
+                 0px -5px 35px rgba(255,255,255,0.8);
+}
+
+.dragable-icon-wrap {
+	position: relative; 
+	width: 0; 
+	height: 0;		
+	top:30%;
+	margin-left: auto;
+	margin-right: auto;
+}

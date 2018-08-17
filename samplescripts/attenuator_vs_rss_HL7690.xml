@@ -1,0 +1,262 @@
+<atrun>
+	<head>
+		<name>90dB Attenuator vs. RX RSSI on HL7692</name>
+		<description>Short sample script</description>
+		<author>TS</author>
+		<date>201807-15 20:49:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+		<indicator>
+			<table>
+				<tr>
+					<td name="att1">ATT 1</td>
+					<td name="mobile">Mobile</td>
+					<td name="attached">Attached</td>
+				</tr>
+			</table>
+		</indicator>
+		<graphs>
+			<graph type="line" name="Attenuator" refresh="2000">
+				<title>Attenuation</title>
+				<data displayLegend="true">
+					<set name="attenuation" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(255, 0, 0 , 0.2)" lineTension="0.1" backgroundColorFill="true" pointRadius="0" pointHoverRadius="4">
+						<label>attenuation (-dB)</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes tooltipFormat="ll HH:mm:ss.SSS" display="true">
+						<label display="false">time</label>
+					</xaxes>
+					<yaxes suggestedMin="0" suggestedMax="40" display="true">
+						<label display="true">-dB</label>
+					</yaxes>
+				</scales>
+			</graph>
+
+			<graph type="line" name="RSSI" refresh="2000">
+				<title>Attenuation</title>
+				<data displayLegend="true">
+					<set name="rssi" borderColor="rgba(0, 0, 255, 1)" backgroundColor="rgba(0, 0, 255, 0.2)" lineTension="0.1" backgroundColorFill="true" pointRadius="0" pointHoverRadius="4">
+						<label>RSSI (-dBm)</label>
+					</set>
+					<set name="attached" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(255, 0, 0, 0.2)" lineTension="0.1" backgroundColorFill="true" pointRadius="0" pointHoverRadius="4">
+						<label>Attached</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes tooltipFormat="ll HH:mm:ss.SSS" display="true">
+						<label display="false">time</label>
+					</xaxes>
+					<yaxes suggestedMin="-110" suggestedMax="-50" display="true">
+						<label display="true">-dBm</label>
+					</yaxes>
+				</scales>
+			</graph>
+
+		</graphs>
+	</client>
+	<server>
+
+		<script>	<![CDATA[  
+
+
+		var serialCallbackProxyForwarder = null;
+//		var attSerial = getNewSerial({port: "/dev/tty.usbserial", baud: 115200, delimiter: "\n", name: "Att 1  " });
+//		var mobileSerial = getNewSerial({port: "/dev/tty.usbserial-AH05YQYF", baud: 115200, delimiter: "\n", name: "Mobile"});
+
+		var attSerial = getNewSerial({port: "COM35", baud: 115200, delimiter: "\n", name: "Att 1  " });
+		var mobileSerial = getNewSerial({port: "COM5", baud: 115200, delimiter: "\n", name: "Mobile"});
+
+		
+		attSerial.serialCallbackProxyForwarder = null;
+		mobileSerial.serialCallbackProxyForwarder = null;
+		
+		
+		function pad(num, size) {
+		    var s = "000000000" + num;
+		    return s.substr(s.length-size);
+		}
+
+
+		function wait(delay) {
+		    return new Promise(function(resolve, reject) {
+		        setTimeout(resolve, delay);
+		    });
+		}
+		
+		function attSerialCallbackProxy(data) {		
+ 			if(attSerial.serialCallbackProxyForwarder !== null) { attSerial.serialCallbackProxyForwarder(attSerial,data) ; }
+		}
+
+
+		function mobileSerialCallbackProxy(data) {		
+ 			if(mobileSerial.serialCallbackProxyForwarder !== null) { mobileSerial.serialCallbackProxyForwarder(mobileSerial, data) ; }
+		}
+
+
+		function expectResult(serial,cmd,expect,timeout) {
+			
+			serial.writeln(cmd);
+		
+			return new Promise(function(resolve, reject) {
+			
+				if(timeout !== undefined) { 
+			//	console.log("set timeout :" + timeout);
+					setTimeout(function() { resolve({data: "timeout", result: false}); }, timeout); 
+						
+				}
+				serial.serialCallbackProxyForwarder = function (serial, data) { 
+					var re = new RegExp(expect);
+					
+					if (re.test(data)) {
+						resolve({data: data, result: true});  
+					}
+				}
+			});	
+		}
+
+		attSerial.open(attSerialCallbackProxy);
+		mobileSerial.open(mobileSerialCallbackProxy);
+
+		async function f1() {
+			var result = {data: '', result: false};
+			var retry = 0;
+			updateIndicator("att1", Indicator.INDICATOR_UNKNOWN);
+			while(!result.result) {	
+				result = await expectResult(attSerial, 'rid','.*ATT-90.*',1000).catch((err) => { console.log(err);	});
+				++retry;
+				if(retry >= 3) {
+					updateIndicator("att1", Indicator.INDICATOR_FAILED);
+					attSerial.close();
+					logger.warn("couldn't open Attenuator even after retries - exiting");
+					exit(1);
+				}
+			}			
+			updateIndicator("att1", Indicator.INDICATOR_OK);
+
+			logger.norm("resetting Attenuator and wait 5sec");
+			attSerial.writeln("wv00000");
+			await wait(500);
+			attSerial.writeln("wv00000");
+			await wait(5000);			 
+			await expectResult(mobileSerial, 'ATE0\r\n','.*OK.*',1000).catch((err) => { console.log(err);	});
+			await wait(500);
+			await expectResult(mobileSerial, 'AT+CREG=0\r\n','.*OK.*',1000).catch((err) => { console.log(err);	});
+			await wait(500);
+			await expectResult(mobileSerial, 'AT+CGREG=0\r\n','.*OK.*',1000).catch((err) => { console.log(err);	});
+			await wait(500);
+
+
+			result = {data: '', result: false};
+			resultB = {data: '', result: false};
+			retry = 0;
+			updateIndicator("mobile", Indicator.INDICATOR_UNKNOWN);
+			while(!result.result) {
+				result = await expectResult(mobileSerial, 'ATI\r\n','.*HL7690.*',1000).catch((err) => { console.log(err);	});
+				console.log(result);
+				++retry;
+				if(retry >= 3) {
+					updateIndicator("mobile", Indicator.INDICATOR_FAILED);
+					attSerial.writeln("wv00000");
+					attSerial.close();
+					mobileSerial.close();
+					logger.warn("couldn't open Mobile Module even after retries - exiting");
+					exit(1);
+				}
+				await wait(500);
+			}
+			
+			updateIndicator("mobile", Indicator.INDICATOR_OK);
+
+
+
+			result = {data: '', result: false};
+			resultB = {data: '', result: false};
+
+			updateIndicator("attached", Indicator.INDICATOR_UNKNOWN);
+			while((!result.result) && (!resultB.result)) {
+				let re = new RegExp('.CG?REG: *[0,1,3],[1,5]');
+			
+				result = await expectResult(mobileSerial, 'AT+CREG?\r\n','\\+CREG: *[0,1,3],[1,5]',1000).catch((err) => { console.log(err);	});
+				result.result = re.test(result.data);	
+				
+				resultB = await expectResult(mobileSerial, 'AT+CGREG?\r\n','\\+CGREG: *[0,1,3],[1,5]',1000).catch((err) => { console.log(err);	});
+				resultB.result = re.test(resultB.data);	
+				++retry;
+				if(retry >= 600) {
+					updateIndicator("attached", Indicator.INDICATOR_FAILED);
+					attSerial.writeln("wv00000");
+					attSerial.close();
+					mobileSerial.close();
+					logger.warn("couldn't get an attach Module even after long time wait - exiting");
+					exit(1);
+				}
+				await wait(1000);
+			}
+			
+			updateIndicator("attached", Indicator.INDICATOR_OK);
+
+			var db = 0;
+			var up = false;
+
+			while(true) {
+//			for(var db = 0; db <= 900; ++db) {
+				
+				result = await expectResult(mobileSerial, 'AT+CESQ\r\n','\\+CESQ: *[0-9]*,.*',1000).catch((err) => { console.log(err);	});
+				console.log(result);
+				var rssi = result.data.match(/.CESQ: *[0-9]*,[0-9]*,[0-9]*,[0-9]*,[0-9]*,([0-9]*).*/)[1];
+				console.log(rssi);
+				if(rssi == 99) { rssi = 0; } else { rssi = (110 - rssi) * (-1); }
+				Graph.update("RSSI","rssi",rssi);	
+				
+				
+				let re = new RegExp('.CG?REG: *[0,1,3],[1,5]');
+				result = await expectResult(mobileSerial, 'AT+CREG?\r\n','\\+CREG: *[0-9],[0-9]',1000).catch((err) => { console.log(err);	});
+				result.result = re.test(result.data);
+				resultB = await expectResult(mobileSerial, 'AT+CGREG?\r\n','\\+CGREG: *[0-9],[0-9]',1000).catch((err) => { console.log(err);	});
+				resultB.result = re.test(resultB.data);	
+				if(result.result && resultB.result) {
+					updateIndicator("attached", Indicator.INDICATOR_OK);
+					Graph.update("RSSI","attached", -40);	
+				} else {
+					updateIndicator("attached", Indicator.INDICATOR_FAILED);
+					Graph.update("RSSI","attached", -120);	
+				}	
+			
+				var padString = pad(db,4);
+				attSerial.writeln("wv" + padString+ "0");
+				Graph.update("Attenuator","attenuation",db / 10);	
+				
+				if(up) { ++db; } else { --db }
+				if(db >= 401 ) { db=400; up = false; } 
+				if(db < 0 ) { db=0; up = true; } 
+				await wait(500);
+			}
+			
+			
+			attSerial.writeln("wv00000");
+			await wait(5000);			 
+			
+			attSerial.close();
+			mobileSerial.close();
+			logger.norm("finishing test script");
+			exit(0);
+			
+		}	
+		f1();
+		
+	
+		]]></script>
+
+
+	</server>
+
+
+
+	<!-- /* function pad(num, size) { var s = "000000000" + num; return s.substr(s.length-size); } */ // var db = 0; /* function testEvent() { setTimeout(function () { padString 
+		= "5"; // var padString = pad(db, 5); logger.norm("Set DB to:" + padString); // attSerial.writeln("wv" + padString); // ++db; // if(db < 90) testEvent(); }, 500); } testEvent(); 
+		*/ -->
+</atrun>

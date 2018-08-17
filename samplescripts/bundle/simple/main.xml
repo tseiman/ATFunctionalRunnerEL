@@ -1,0 +1,50 @@
+<atrun>
+	<head>
+		<name>Sample</name>
+		<description>Short sample script in a bundle</description>
+		<author>TS</author>
+		<date>2018-08-16 20:49:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+		<indicator>
+			<table>
+				<tr>
+					<td name="pinok">PIN</td>
+					<td name="creg">CREG</td>
+					<td name="cgreg">CGREG</td>
+				</tr>
+			</table>
+		</indicator>
+		<graphs>
+			<graph type="line" name="Attenuator" refresh="2000">
+				<title>Attenuation</title>
+				<data displayLegend="true">
+					<set name="attenuation" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(180, 0, 180, 0.2)" lineTension="0.1" backgroundColorFill="true" pointRadius="0" pointHoverRadius="4">
+						<label>attenuation (-dB)</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes tooltipFormat="ll HH:mm:ss.SSS" display="true">
+						<label display="false">Date</label>
+					</xaxes>
+					<yaxes suggestedMin="0" suggestedMax="90" display="true">
+						<label display="true">-dB</label>
+					</yaxes>
+				</scales>
+			</graph>
+
+
+		</graphs>
+	</client>
+	<server>
+
+		<script src="main.js"/>
+
+
+	</server>
+
+
+</atrun>

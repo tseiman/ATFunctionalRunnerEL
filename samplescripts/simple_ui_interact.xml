@@ -1,0 +1,59 @@
+<atrun>
+	<head>
+		<name>UI interactSample</name>
+		<description>Short UI interact sample script</description>
+		<author>TS</author>
+		<date>2018-08-06 17:49:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+
+		<io>
+			<input type="text" name="testin" inputcheck="^[1-9][0-9]*$" caption="TestIn 1">0</input>
+			<input type="text" name="testin2" inputcheck="^[1-9][0-9]*$" caption="TestIn 2">0</input>
+			<output type="text" name="testout" caption="Given value 1">0</output>
+			<output type="text" name="testout2" caption="Given value 2">0</output>
+			<output type="text" name="result" caption="Result">0</output>
+		</io>
+	</client>
+	<server>
+
+		<script>	<![CDATA[  
+		
+		var inputval = {};
+		
+		function calculateResult() {
+			var res = parseInt(inputval["testin"]) + parseInt(inputval["testin2"]);
+			logger.norm("result: " + res);
+			updateTextIO("result", res);
+		}
+		
+		getInputEvent(function( data ) {
+			if(data.valid) {
+				inputval[data.input] = data.value;
+
+				if(data.input ==='testin') { updateTextIO("testout",data.value); }
+				if(data.input ==='testin2') { updateTextIO("testout2",data.value); }
+				
+				if(inputval["testin"] !== undefined && inputval["testin2"] !== undefined)	{ calculateResult(); }
+			}
+		});
+		
+		
+		function testEvent() {
+			setTimeout(function() {
+			testEvent();
+			}, 1000);
+		}
+		
+		testEvent();
+		]]></script>
+
+
+	</server>
+
+
+
+</atrun>

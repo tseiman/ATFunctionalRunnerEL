@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Async Promise Test</title>
+
+
+</head>
+<body>
+	test async
+
+	<button id="onclick1" onclick="console.log('click');">Click me
+		1</button>
+
+
+
+
+
+	<script type="text/javascript">
+
+	
+var proxyForwarder = null;
+	
+function callbackProxy() {
+	
+	console.log("I'm proxy");
+ 	if(proxyForwarder !== null) proxyForwarder();
+	
+}
+
+document.getElementById("onclick1").onclick  = callbackProxy;
+
+
+function promiseSetCallBack() {
+	return new Promise(function(resolve, reject) {
+		proxyForwarder = function () { resolve("OK");  }	
+	}
+)};
+
+
+async function f1() {
+	console.log('waiting for click');
+	
+	var x = await promiseSetCallBack();
+
+	console.log('clicked x=' + x);
+	for(var i = 0; i <3; ++i) {
+		await promiseSetCallBack().then((successMessage) => { console.log("Yayoo! " + successMessage); });
+		console.log('clicked' + i);
+	}
+}
+f1();
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+</body>
+</html>

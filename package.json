@@ -1,0 +1,26 @@
+{
+  "name": "ATFunctionalRunnerEL",
+  "version": "0.1.0",
+  "description": "ATFunctionalRunnerEL is a Scriptable Functional test framework",
+  "main": "main-window.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "https://github.com/tseiman/ATFunctionalRunnerEL",
+  "keywords": [
+    "ATFunctionalRunnerEL",
+    "Electron"
+  ],
+  "author": "Thomas Schmidt",
+  "license": "NoLicense",
+  "devDependencies": {
+    "electron": "^2.0.0",
+    "crc": "^3.7.0",
+    "express": "^4.16.3",
+    "moment": "^2.22.2",
+    "serialport": "^6.2.1",
+    "ws": "^5.2.1",
+    "xmldom": "^0.1.27",
+    "xpath": "0.0.27"
+  }
+}

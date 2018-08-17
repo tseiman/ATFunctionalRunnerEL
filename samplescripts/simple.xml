@@ -1,0 +1,130 @@
+<atrun>
+	<head>
+		<name>Sample</name>
+		<description>Short sample script</description>
+		<author>TS</author>
+		<date>201807-15 20:49:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+		<indicator>
+			<table>
+				<tr>
+					<td name="pinok">PIN</td>
+					<td name="creg">CREG</td>
+					<td name="cgreg">CGREG</td>
+				</tr>
+			</table>
+		</indicator>
+		<graphs>
+			<graph type="line" name="Attenuator" refresh="2000">
+				<title>Attenuation</title>
+				<data displayLegend="true">
+					<set name="attenuation" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(180, 0, 180, 0.2)" lineTension="0.1" backgroundColorFill="true" pointRadius="0" pointHoverRadius="4">
+						<label>attenuation (-dB)</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes tooltipFormat="ll HH:mm:ss.SSS" display="true">
+						<label display="false">Date</label>
+					</xaxes>
+					<yaxes suggestedMin="0" suggestedMax="90" display="true">
+						<label display="true">-dB</label>
+					</yaxes>
+				</scales>
+			</graph>
+	<!-- 		<graph type="line" name="test-graph2" delay="2000" duration="600000" refresh="2000">
+				<title>Test graph 2</title>
+				<data>
+					<set name="test-a" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(180, 0, 180, 0)" lineTension="0">
+						<label>Test a Data</label>
+					</set>
+					<set name="test-b" borderColor="rgba(0,255, 0, 1)" backgroundColor="rgba( 180, 180, 0)" lineTension="0">
+						<label>Test a Data</label>
+					</set>
+					
+				</data>
+				<scales>
+					<xaxes timeunit="second" unitStepsize="10" />
+					<yaxes beginAtZero="true" min="0" />
+				</scales>
+			</graph>
+			<graph type="line" name="test-graph3" delay="2000" duration="600000" refresh="2000">
+				<title>Test graph 3</title>
+				<data>
+					<set name="test-a" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(180, 0, 180, 0)" lineTension="0">
+						<label>Test a Data</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes timeunit="second" unitStepsize="10" />
+					<yaxes beginAtZero="true" min="0" />
+				</scales>
+			</graph>
+			<graph type="line" name="test-graph4" delay="2000" duration="600000" refresh="2000">
+				<title>Test graph 4</title>
+				<data>
+					<set name="test-a" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(180, 0, 180, 0)" lineTension="0">
+						<label>Test a Data</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes timeunit="second" unitStepsize="10" />
+					<yaxes beginAtZero="true" min="0" />
+				</scales>
+			</graph> -->
+
+		</graphs>
+	</client>
+	<server>
+
+		<script>	<![CDATA[  
+		var db = 0;
+		function pad(num, size) {
+		    var s = "000000000" + num;
+		    return s.substr(s.length-size);
+		}
+		
+		function attSerialCallback(data) {
+			console.log("aaaa callback serial: " + data);
+		}
+
+		var attSerial = getNewSerial({port: "/dev/tty.usbserial", baud: 115200, delimiter: "\n" });
+		attSerial.open(attSerialCallback);
+		attSerial.writeln("rid");
+		
+		
+		
+		function testEvent() {
+			setTimeout(function() {
+				var padString = pad(db,4);
+			//	logger.norm("Set DB to:" + padString + "0");
+				attSerial.writeln("wv" + padString+ "0");
+				Graph.update("Attenuator","attenuation",db / 10);
+				++db;
+				if(db  < 901) { 
+					testEvent(); 
+				} else {
+					attSerial.close();
+					exit(0);
+				}
+			}, 100);
+		}
+		
+		testEvent();
+		
+		
+	
+		]]></script>
+
+
+	</server>
+
+
+
+	<!-- /* function pad(num, size) { var s = "000000000" + num; return s.substr(s.length-size); } */ // var db = 0; /* function testEvent() { setTimeout(function () { padString 
+		= "5"; // var padString = pad(db, 5); logger.norm("Set DB to:" + padString); // attSerial.writeln("wv" + padString); // ++db; // if(db < 90) testEvent(); }, 500); } testEvent(); 
+		*/ -->
+</atrun>
