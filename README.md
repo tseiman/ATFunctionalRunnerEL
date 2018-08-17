@@ -3,8 +3,8 @@
 # ATFunctionalRunnerEL
 
 
-** NOTE: this is highly experimental and meant for self education - it it neither meant to be good code or an example of good coding **
-** it is as well not meant to be secure software by purpose - testing tools are there to perform tests which requires a lot of freedom **
+**NOTE: this is highly experimental and meant for self education - it it neither meant to be good code or an example of good coding**
+**it is as well not meant to be secure software by purpose - testing tools are there to perform tests which requires a lot of freedom**
 
 
 ATFunctionalRunner(EL) is meant to be a functional script-able test framework which gives some graphical representation of acquired data and the possibility to interact e.g. with a device under test. Originally it was meant to control IoT modems via AT commands, fetching unsolicited messages and polling information such as RSSI values etc. Nevertheless the use of the tool might be far beyond that.
