@@ -6,7 +6,7 @@ const Logger 			 = require('./server-scripts/logger-server.js');
 const StatisticsInterface = require('./server-scripts/statistics-interface.js');
 const Config				 = require('./server-scripts/server-config.js');
 const SerialIO				 = require('./server-scripts/serial-io.js');
-
+const path = require('path');
 
 // var staticServer = new StaticServer();
 
@@ -14,8 +14,13 @@ var serverConfig = new Config();
 var logger = new Logger(serverConfig);
 serverConfig.setLogger(logger);
 
+
 var websocketServer = new WebSocketServer(serverConfig);
 serverConfig.setWebSocketServer(websocketServer);
+
+var statisticsInterface = new StatisticsInterface(serverConfig);
+serverConfig.setSatisticsInterface(statisticsInterface);
+
 
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -24,11 +29,12 @@ let mainWindow;
 
 function createWindow () {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1200, height: 800});
+  mainWindow = new BrowserWindow({width: 1200, height: 800, icon: path.join(__dirname, 'icons/png/icon64x64.png'), title: "AT Functional Runner (EL)",});
+//	mainWindow = new BrowserWindow({width: 1200, height: 800, icon: __dirname +  '/icons/mac/Icon.icns'});
   mainWindow.maximize();
 
   // and load the index.html of the app.
-  mainWindow.loadFile('public/index.html');
+  mainWindow.loadFile('gui-scripts/index.html');
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()

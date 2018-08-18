@@ -3,7 +3,7 @@
  */
 
 var cp = require('child_process');
-
+const path = require('path');
 
 class CodeEval {
 
@@ -16,10 +16,13 @@ class CodeEval {
 
 
 	run() {
-		this.worker = cp.fork('./server-scripts/script-runner.js', [this.code]);
+//		this.worker = cp.fork('server-scripts/script-runner.js', [this.code]);
+		this.worker = cp.fork(path.join(__dirname, 'script-runner.js'), [this.code]);
+		
 		var self = this;
 		this.running = false;
 		self.logger.LogNormal("Code evaluation starts.");
+		
 		
 		this.worker.on('message', function(data) {
 			
@@ -31,6 +34,7 @@ class CodeEval {
 				self.statisticsInterface.updateGraph(data.name,data.set,data.value);
 				break;	
 			case "updateTextIO":
+				
 				self.statisticsInterface.updateTextIO(data.name,data.message);
 				break;	
 			case "log":

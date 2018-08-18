@@ -16,7 +16,6 @@ class StatisticsInterface {
 	constructor(serverConfig) {
 		this.ws = serverConfig.getWebSocketServer();
 		this.logger = serverConfig.getLogger();
-
 	}
 	
 	getTimeStamp() {

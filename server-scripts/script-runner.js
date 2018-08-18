@@ -2,10 +2,12 @@
  * http://usejsdoc.org/
  */
 
+
 const vm = require("vm");
 const SerialIO				 = require('./serial-io.js');
 
 var script = vm.createScript( process.argv[2] );
+
 
 
 class ProcessLogger {
@@ -47,8 +49,11 @@ var context = vm.createContext(obj);
 
 script.runInNewContext(context);
 
+
 process.on('uncaughtException', function(err) {
 	console.log("uncaughtException:");
 	console.log(err);
+	process.send({type: "log", crit: "warn" , msg: err}); 
 	// process.exit(1);
 });
+
