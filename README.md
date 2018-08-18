@@ -1,6 +1,7 @@
 
 
-# ATFunctionalRunnerEL
+
+# ATFunctionalRunnerEL ![alt text](https://raw.githubusercontent.com/tseiman/ATFunctionalRunnerEL/master/icons/png/icon128x128.png)
 
 
 **NOTE: this is highly experimental and meant for self education - it it neither meant to be good code or an example of good coding**
