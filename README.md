@@ -13,4 +13,17 @@ ATFunctionalRunner(EL) is meant to be a functional script-able test framework wh
 ATFunctionalRunner(EL) is a Electron application (yes electron, yes insecure, yes hipster yes javascript ....) (originally it was node.js...) which brings up a screen which can be more or less freely populated with different widgets (by definition trough XML) such as Input/Output text fields or Graphs. In the back-end a user defined JavaScript is executed in a sand-box which allows to interact with the GUI and which can perform various IO - such as IO over COM ports towards IoT modems (but for sure much more).
 
 
+## Install
+
+* clone the project `git clone https://github.com/tseiman/ATFunctionalRunnerEL.git`
+* change to the folder e.g. `cd ATFunctionalRunnerEL`
+* install the dependencies `npm install`
+
+You might clone the project into a eclipse (+nodeclipse plugin) workspace. Here you can start the Project.
+
+You might run as well `npm run package-mac`, `npm run package-win`, `npm run package-linux` to get a executable and bundle.
+
+
+
+
 
