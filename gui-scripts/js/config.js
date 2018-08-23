@@ -3,8 +3,9 @@
  */
 
 
-class Config {
 
+
+class Config {
 
 	constructor(configFile) {
 		this.ziptype = false;
@@ -14,7 +15,6 @@ class Config {
 			this.setFileName(null);
 			this.setFileSize(null);
 			this.setFileLastModified(null);
-
 		} else {
 			this.configFile = configFile;
 			logger.system('Loaded file : ' + configFile.name + '" with ' + configFile.size + 'bytes, last modified: ' + configFile.lastModifiedDate);
@@ -62,8 +62,9 @@ class Config {
 			var zipFile = new JSZip();
 			zipFile.loadAsync(this.configFile).then(function(zip) {
 				zip.files['main.xml'].async("string").then(function (data) {
+					self.zipdata = zip;	
 					self.parseConfig(data);                         
-
+					
 				});                                             
 			}, function (e) {
 		    	console.log('error loading ZIP "' + this.configFile + '" because: ' + e );
@@ -149,25 +150,14 @@ class Config {
 
 	}
 
-	parseConfigForServer() {
-		if( typeof this.configData === 'undefined') throw('no config data ?!');
+	
 
-
+	parsePlainConfigForServer() {
 
 		var element = this.configData.evaluate( '//atrun', this.configData, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 		if(element != null) {
-//			if(this.configData != null) {
-			//		var head = this.configData.evaluate( '//atrun/head', this.configData, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
-
-			//		if(head != null) {
-			//			element.prepend(head);
-			//		}
-
-//			var tmp = document.createElement("server"); // hack 
-//			tmp.appendChild(element);
 
 			var data = element.outerHTML;
-//			var data = this.configData.outerHTML;
 			var enc = new TextEncoder();
 			var enc_data = enc.encode(data);
 			var b64data = base64ArrayBuffer(enc_data);
@@ -183,13 +173,98 @@ class Config {
 			}
 
 
-			//	console.log(enc_data + ", " + crc32.get());
-			//	console.log(base64ArrayBuffer(enc_data) + ", " + crc32.get());
-			//	console.log(JSON.stringify({type: 'SERVERCONFIG-PUSH', data: b64data, crc32: crc32.get() }));
-
 			socket_log.send(JSON.stringify({type: 'SERVERCONFIG-PUSH', data: b64data, crc32: crc32.get() }));
 		}
 
+	}
+
+
+	
+	parseZipConfigForServer() {
+		var self = this;
+		var serverScriptBufferArray = new Array();
+
+		var processedEntries = 0;
+		var entriesToProcess = 0;
+		
+		var inSync = false;
+
+		var element = this.configData.evaluate('//atrun/server/script', this.configData, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+		if(element != null) { 
+
+			let result = this.configData.evaluate("//atrun/server/script", this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+			entriesToProcess = result.snapshotLength;
+			for (let i=0; i<entriesToProcess; ++i) {
+				if(result.snapshotItem(i).hasAttribute('src')) {
+					
+					self.zipdata.files[result.snapshotItem(i).getAttribute('src')].async("string").then(function (data) {
+						++processedEntries;						
+						serverScriptBufferArray[i] = data;
+						result.snapshotItem(i).parentNode.removeChild(result.snapshotItem(i));
+					});                                             
+					
+				} else {
+					
+					++processedEntries;
+					serverScriptBufferArray[i] = result.snapshotItem(i).textContent;
+					result.snapshotItem(i).parentNode.removeChild(result.snapshotItem(i));
+				}
+
+			}
+
+		}
+
+		var intvl = setInterval(function() {
+		    if (entriesToProcess >= processedEntries) { 
+		        clearInterval(intvl);
+				console.log("-------");
+		
+			//	let serverScriptBuffer = "  <![CDATA[  \n";
+				let serverScriptBuffer = "";
+				for (var i = 0; i <  serverScriptBufferArray.length; i++) {
+					serverScriptBuffer += serverScriptBufferArray[i] + "\n";
+					
+				    //Do something
+				}
+//				serverScriptBuffer += "]]>";
+							
+				let newScript = self.configData.createElement("script");
+			//	console.log(newScript[0]);
+	//			newScript.appendChild(serverScriptBuffer);
+				
+			//	newScript.innerHTML("aaaaaaa");
+				
+				let result = self.configData.evaluate("//atrun/server", self.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+				
+		//		var node = self.configData.createTextNode("This is new.");
+				result.snapshotItem(0).appendChild(newScript);
+
+				result = self.configData.evaluate("//atrun/server/script", self.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+				result.snapshotItem(0).innerHTML = serverScriptBuffer;
+
+				console.log(self.configData);
+				self.parsePlainConfigForServer();
+				
+				
+		    }
+		}, 100);
+
+		
+	}
+
+	
+	
+
+	
+	
+	parseConfigForServer() {
+		if( typeof this.configData === 'undefined') throw('no config data ?!');
+		if(this.ziptype) {
+			this.parseZipConfigForServer();
+		} else {
+			this.parsePlainConfigForServer();
+		}
 	}
 
 

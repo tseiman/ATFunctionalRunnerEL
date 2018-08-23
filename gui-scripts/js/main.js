@@ -22,7 +22,7 @@ function loadFile() {
 	if($('#fileLoader' )[0].files &&  $('#fileLoader' )[0].files[0] ) {
 		var configFile = $( '#fileLoader' )[0].files[0];
 		config = new Config(configFile);
-		if(!config.ziptype) socket_log.send(JSON.stringify({type: 'NEW FILE', fileName: configFile.name, fileSize: configFile.size, lastModified:configFile.lastModifiedDate }));
+		socket_log.send(JSON.stringify({type: 'NEW FILE', fileName: configFile.name, fileSize: configFile.size, lastModified:configFile.lastModifiedDate }));
 		
 
 	} else {
@@ -68,7 +68,7 @@ socket_log.onmessage = function(msg) {
 		switch (data.type) {
 		case "PING":
 			--wsOK;
-		//		console.log("got PING : data.configok" + data.configok + ", data.isNotRunning" + data.isNotRunning) ;
+				console.log("got PING : data.configok" + data.configok + ", data.isNotRunning" + data.isNotRunning) ;
 			
 //			let inputlist = config.getInputs();
 

@@ -6,9 +6,10 @@
   "main": "main-window.js",
   "scripts": {
     "start": "electron .",
-    	"package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icons/mac/Icon.icns --prune=true --out=release-builds",
-    	"package-win": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=win32 --arch=ia32 --icon=icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=\"TS\" --version-string.FileDescription=\"AT Functional Runner EL\" --version-string.ProductName=\"AT Functional Runner EL\"",    
-    	"package-linux": "electron-packager . electron-tutorial-app --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=icons/mac/Icon.icns --prune=true --out=release-builds",
+    "package-win": "electron-packager . at-functional-runner-el --overwrite --asar=true --platform=win32 --arch=x64  --icon=icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=\"TS\" --version-string.FileDescription=\"AT Functional Runner EL\" --version-string.ProductName=\"AT Functional Runner EL\"",
+    "package-linux": "electron-packager . at-functional-runner-el --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds",
+    "install": "electron-rebuild"
   },
   "repository": "https://github.com/tseiman/ATFunctionalRunnerEL",
   "keywords": [
@@ -19,13 +20,16 @@
   "license": "NoLicense",
   "dependencies": {
     "crc": "^3.7.0",
-    "electron": "^2.0.0",
-    "electron-packager": "^12.1.0",
     "express": "^4.16.3",
     "moment": "^2.22.2",
-    "serialport": "^6.2.1",
+    "serialport": "^6.2.2",
     "ws": "^5.2.1",
     "xmldom": "^0.1.27",
     "xpath": "0.0.27"
+  },
+  "devDependencies": {
+    "electron-packager": "^12.1.0",
+    "electron": "^2.0.0",
+    "electron-rebuild": "^1.8.2"
   }
 }

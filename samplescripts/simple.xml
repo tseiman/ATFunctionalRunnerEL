@@ -91,7 +91,8 @@
 			console.log("aaaa callback serial: " + data);
 		}
 
-		var attSerial = getNewSerial({port: "/dev/tty.usbserial", baud: 115200, delimiter: "\n" });
+		var attSerial = getNewSerial({port: "COM35", baud: 115200, delimiter: "\n" , name: "Att 1  "});
+//		var attSerial = getNewSerial({port: "/dev/tty.usbserial", baud: 115200, delimiter: "\n", name: "Att 1  "});
 		attSerial.open(attSerialCallback);
 		attSerial.writeln("rid");
 		
