@@ -67,8 +67,8 @@
 //		var attSerial = getNewSerial({port: "/dev/tty.usbserial", baud: 115200, delimiter: "\n", name: "Att 1  " });
 //		var mobileSerial = getNewSerial({port: "/dev/tty.usbserial-AH05YQYF", baud: 115200, delimiter: "\n", name: "Mobile"});
 
-		var attSerial = getNewSerial({port: "COM35", baud: 115200, delimiter: "\n", name: "Att 1  " });
-		var mobileSerial = getNewSerial({port: "COM5", baud: 115200, delimiter: "\n", name: "Mobile"});
+		var attSerial = getNewSerial({port: "COM39", baud: 115200, delimiter: "\n", name: "Att 1  " });
+		var mobileSerial = getNewSerial({port: "COM53", baud: 115200, delimiter: "\n", name: "Mobile"});
 
 		
 		attSerial.serialCallbackProxyForwarder = null;
