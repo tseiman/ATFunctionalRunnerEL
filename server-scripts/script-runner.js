@@ -5,6 +5,9 @@
 
 const vm = require("vm");
 const SerialIO				 = require('./serial-io.js');
+const Https				 = require('https');
+const Http				 = require('http');
+var Querystring = require('querystring');
 
 var script = vm.createScript( process.argv[2] );
 
@@ -41,6 +44,10 @@ var obj = {
 			io: 		function(text) { process.send({type: "log", crit: "io" 		, msg: text}); }
 		},
 		getNewSerial : function(config)  { return new SerialIO(config,new ProcessLogger()); },
+		https : Https,		
+		http :  Http,		
+		querystring :  Querystring,
+		Buffer: Buffer,
 		exit: function(code) { process.send({type: "exit", code: code}); },
 		getInputEvent:  function(callback) { process.on('message',callback); }
 		

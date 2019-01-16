@@ -3,6 +3,7 @@
  */
 
 var cp = require('child_process');
+var querystring = require('querystring');
 const path = require('path');
 
 class CodeEval {
@@ -26,6 +27,7 @@ class CodeEval {
 		
 		this.worker.on('message', function(data) {
 			
+		//	self.logger.LogNormal("code-eval.worker" +  querystring.stringify(data));
 			switch (data.type) {
 			case "updateIndicator":
 				self.statisticsInterface.updateIndicator(data.name,data.state);
@@ -33,8 +35,7 @@ class CodeEval {
 			case "updateGraph":
 				self.statisticsInterface.updateGraph(data.name,data.set,data.value);
 				break;	
-			case "updateTextIO":
-				
+			case "updateTextIO":				
 				self.statisticsInterface.updateTextIO(data.name,data.message);
 				break;	
 			case "log":
@@ -117,6 +118,8 @@ class CodeEval {
 
 	postMessage(data) {
 		var self = this;
+		self.logger.LogNormal("code-eval.postMessage:"+ querystring.stringify(data));
+
 		if(self.worker === undefined) return;
 		self.worker.send(data);
 	}

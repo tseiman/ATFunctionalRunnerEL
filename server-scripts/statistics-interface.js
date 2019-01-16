@@ -42,7 +42,7 @@ class StatisticsInterface {
 	}
 
 	updateTextIO(name, message) {
-//		console.log("indicator: " + name + ", state: " + state);
+		console.log("indicator: " + name );
 		var data = {time:  this.getTimeStamp(), type: 'statistics-text' , name: name, message : message}
 		try { this.ws.send(JSON.stringify(data)); } catch(e) { console.log(e); }
 	}

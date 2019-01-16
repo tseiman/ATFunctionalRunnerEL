@@ -4,7 +4,6 @@
 
 
 
-
 class Config {
 
 	constructor(configFile) {
@@ -28,6 +27,7 @@ class Config {
 		this.graphs = {};
 		this.inputs = {};
 		this.outputs = {};
+		this.buttons = {};
 	}
 
 
@@ -88,8 +88,93 @@ class Config {
 		this.parseConfigForServer();	
 	}
 
+	
+	parseConfigForClientElements(node,depth,append_to_id) {
+		var ldep = depth + 1;
+		
+		
+		console.log({parseConfigForClientElements : node.nodeName, ldep:ldep})
+
+// var result = {};
+		switch (node.nodeName) {
+		case "button":
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			this.buttons[result.snapshotItem(0).value] = new Button(result.snapshotItem(0).value, this.configData,append_to_id);
+		break;
+		case "input":
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			this.inputs[result.snapshotItem(0).value] = new Input(result.snapshotItem(0).value, this.configData,append_to_id);
+		break;
+		case "output":
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			this.outputs[result.snapshotItem(0).value] = new Output(result.snapshotItem(0).value, this.configData,append_to_id);
+		break;
+		case "indicator":			
+			if(null == node.ownerDocument.evaluate(".//table", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue) throw("check indicator XML");
+			this.indicator = new Indicator(this.configData,append_to_id);
+		break;
+		case "graph":				
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			this.graphs[result.snapshotItem(0).value] = new LineChart(result.snapshotItem(0).value, this.configData,append_to_id);
+			
+		break;
+		case "section":
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			$("#space").html($("#space").html() +'<div id="accordion_' + result.snapshotItem(0).value + '"></div>');
+	//				$("#space").append('<p>aaaaaaaa');
+				
+				var element  = node.ownerDocument.evaluate('.//section-item',node,node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+				if(element != null) { 
+					for (let i=0, length=element.snapshotLength; i<length; ++i) {			
+//						console.log({aaaaaaa:"aaaaaaaaaa", ldep : ldep, el: element.snapshotItem(i)});
+						this.parseConfigForClientElements(element.snapshotItem(i), ldep, '#accordion_' + result.snapshotItem(0).value);
+						
+					}
+				}
+			$("#space").append('<script> $( function() {  $( "#accordion_' + result.snapshotItem(0).value + '").accordion();} ); </script>');
+						
+		break;
+		case "section-item":
+			
+			var apped_to = (append_to_id === undefined) ? "#space" : append_to_id;
+			console.log("append to:" + apped_to);
+			
+			 result = node.ownerDocument.evaluate(".//@head", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			 var result2 = node.ownerDocument.evaluate(".//@id", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			 
+	//		 console.log({"result 2" : result2.snapshotItem(0)});
+	//		$(apped_to).append('<h3>' + result.snapshotItem(0).value + '</h3><div id="'+ apped_to + '_' +  result2.snapshotItem(0).value +'">aaaa<div>');
+
+					$(apped_to).append('<h3>' + result.snapshotItem(0).value + '</h3><div id="'+ apped_to.substr(1)  + '_' +  result2.snapshotItem(0).value +'"></div');
+
+				var element  = node.ownerDocument.evaluate('.//*',node,node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+				if(element != null) { 
+					for (let i=0, length=element.snapshotLength; i<length; ++i) {			
+						this.parseConfigForClientElements(element.snapshotItem(i), ldep,apped_to + '_' +  result2.snapshotItem(0).value);
+					}
+				}
+				
+		//	$("#space").append('</div>');
+			
+		break;
+		
+		
+		default:
+			/*
+			var element  = node.ownerDocument.evaluate('.//*',node,node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE,null);
+		//	console.log({element : element})
+//			var element = this.configData.evaluate('//*', this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			if(element != null) { 
+				for (let i=0, length=element.snapshotLength; i<length; ++i) {			
+					this.parseConfigForClientElements(element.snapshotItem(i));
+				}
+			} */
+		break;	
+		}
+	}
 
 	parseConfigForClient() {
+		console.log("cooooooooooonfig");
 		if( typeof this.configData === 'undefined') throw('no config data ?!');
 
 		$("#space").empty();
@@ -104,6 +189,27 @@ class Config {
 			}
 		}
 
+
+		
+		
+		var element = this.configData.evaluate('//atrun/client/*', this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+	//	if(element != null) { 
+
+			// let result = this.configData.evaluate("//atrun/client/io/input/@name", this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+
+			for (let i=0, length=element.snapshotLength; i<length; ++i) {
+	
+				console.log({i: i, data: element.snapshotItem(i).nodeName});
+				if(element.snapshotItem(i).nodeName !== "maxlog") {
+					this.parseConfigForClientElements(element.snapshotItem(i),0);
+				}
+//				this.inputs[result.snapshotItem(i).value] = new Input(result.snapshotItem(i).value, this.configData);
+			}
+
+	//	}
+		
+		
+/*		
 		element = this.configData.evaluate('//atrun/client/indicator', this.configData, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 		if(element != null) { 
 			if(null == this.configData.evaluate('//atrun/client/indicator/table', this.configData, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue) throw("check indicator XML");
@@ -144,7 +250,7 @@ class Config {
 			}
 
 		}
-
+*/
 
 
 

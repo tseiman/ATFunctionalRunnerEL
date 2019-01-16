@@ -5,11 +5,13 @@
 
 class Indicator {
 
-	constructor(dom) {
+	constructor(dom, append_to_id) {
+
+		var apped_to = (append_to_id === undefined) ? "#space" : append_to_id;
 		var table = dom.evaluate( '//atrun/client/indicator/table', dom, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 
 //		console.log( table.innerHTML);
-		$("#space").append('<div  class="dragable"><table id="indicator"><tr><th colspan="2000">System states</th></tr> ' + table.innerHTML + "</table></div>");
+		$(apped_to).append('<div  class="dragable"><table id="indicator"><tr><th colspan="2000">System states</th></tr> ' + table.innerHTML + "</table></div>");
 		
 	}
 

@@ -86,11 +86,13 @@ class WebSocketServer {
 						}
 						break;	
 					case "INPUT-UPDATE":
-
+					case "BUTTON-CLICK":
+						
 						if(self.serverConfig.getCodeEval() !== undefined) {
 							self.serverConfig.getCodeEval().postMessage(data);
 						}
 						break;	
+					
 					case "quit":
 						self.wss.isAlive = false;
 						self.ws.terminate();

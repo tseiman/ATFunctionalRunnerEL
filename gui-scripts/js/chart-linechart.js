@@ -4,43 +4,47 @@
 
 class LineChart {
 	
-	constructor(name, dom) {
-//		this.config = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]', dom, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
+	constructor(name, dom, append_to_id) {
+
+		var apped_to = (append_to_id === undefined) ? "#space" : append_to_id;
+		
+		
+//		this.config = dom.evaluate( './/graph[@name="' + name + '"]', dom, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
 //		console.log( this.config);
 		this.name = name;
 		var self = this;
-		this.title = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/title', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-		this.type = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/@type', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-	//	this.delay = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/@delay', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
-		this.refresh = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/@refresh', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
-	//	this.duration = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/@duration', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+		this.title = dom.evaluate( './/graph[@name="' + name + '"]/title', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+		this.type = dom.evaluate( './/graph[@name="' + name + '"]/@type', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+	//	this.delay = dom.evaluate( './/graph[@name="' + name + '"]/@delay', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+		this.refresh = dom.evaluate( './/graph[@name="' + name + '"]/@refresh', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+	//	this.duration = dom.evaluate( './/graph[@name="' + name + '"]/@duration', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
 		
 		this.scales = {xaxes: {}, yaxes: {}};
-		this.scales.xaxes.display = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/xaxes/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-		this.scales.xaxes.tooltipFormat = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/xaxes/@tooltipFormat', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-		this.scales.xaxes.label = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/xaxes/label', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-		this.scales.xaxes.labeldisplay = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/xaxes/label/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-		this.scales.yaxes.display = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/yaxes/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-		this.scales.yaxes.label = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/yaxes/label', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-		this.scales.yaxes.labeldisplay = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/yaxes/label/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-		this.scales.yaxes.suggestedMin = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/yaxes/@suggestedMin', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
-		this.scales.yaxes.suggestedMax = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/scales/yaxes/@suggestedMax', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+		this.scales.xaxes.display = dom.evaluate( './/graph[@name="' + name + '"]/scales/xaxes/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+		this.scales.xaxes.tooltipFormat = dom.evaluate( './/graph[@name="' + name + '"]/scales/xaxes/@tooltipFormat', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+		this.scales.xaxes.label = dom.evaluate( './/graph[@name="' + name + '"]/scales/xaxes/label', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+		this.scales.xaxes.labeldisplay = dom.evaluate( './/graph[@name="' + name + '"]/scales/xaxes/label/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+		this.scales.yaxes.display = dom.evaluate( './/graph[@name="' + name + '"]/scales/yaxes/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+		this.scales.yaxes.label = dom.evaluate( './/graph[@name="' + name + '"]/scales/yaxes/label', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+		this.scales.yaxes.labeldisplay = dom.evaluate( './/graph[@name="' + name + '"]/scales/yaxes/label/@display', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+		this.scales.yaxes.suggestedMin = dom.evaluate( './/graph[@name="' + name + '"]/scales/yaxes/@suggestedMin', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+		this.scales.yaxes.suggestedMax = dom.evaluate( './/graph[@name="' + name + '"]/scales/yaxes/@suggestedMax', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
 
 		this.datasets = [];
 		this.dataQueues = {};
 		
-		let result = dom.evaluate('//atrun/client/graphs/graph[@name="' + name + '"]/data/set/@name', dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+		let result = dom.evaluate('.//graph[@name="' + name + '"]/data/set/@name', dom, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 		
 		for (let i=0, length=result.snapshotLength; i<length; ++i) {
-			let borderColorOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@borderColor', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-			let backgroundColorOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@backgroundColor', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
-			let backgroundColorFillOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@backgroundColorFill', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
-			let lineTensionOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@lineTension', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
-			let pointRadiusOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@pointRadius', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
-			let pointHoverRadiusOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@pointHoverRadius', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+			let borderColorOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@borderColor', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+			let backgroundColorOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@backgroundColor', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+			let backgroundColorFillOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@backgroundColorFill', dom, null, XPathResult.BOOLEAN_TYPE, null ).booleanValue;
+			let lineTensionOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@lineTension', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+			let pointRadiusOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@pointRadius', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
+			let pointHoverRadiusOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/@pointHoverRadius', dom, null, XPathResult.NUMBER_TYPE, null ).numberValue;
 
 		
-			let labelOfSet = dom.evaluate( '//atrun/client/graphs/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/label', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
+			let labelOfSet = dom.evaluate( './/graph[@name="' + name + '"]/data/set[@name="' + result.snapshotItem(i).value + '"]/label', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
 			
 		//	 this.datasets[result.snapshotItem(i).value] = {borderColor: borderColorOfSet, backgroundColor : backgroundColorOfSet, lineTension: lineTensionOfSet, label: labelOfSet };
 			let setdata = { 
@@ -65,7 +69,7 @@ class LineChart {
 		}
 		
 
-		$("#space").append('<div class="chart-wrapper dragable" id="chart-wrapper-' + name + '"><canvas id="' + name + '" ></canvas></div>');
+		$(apped_to).append('<div class="chart-wrapper dragable" id="chart-wrapper-' + name + '"><canvas id="' + name + '" ></canvas></div>');
 		
 	
 	
