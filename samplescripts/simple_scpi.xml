@@ -12,8 +12,7 @@
 		<indicator>
 			<table>
 				<tr>
-			<!-- 		<td name="HMC8012_1_TCP">HMC8012 1 TCP</td>
-					<td name="HMC8012_1_SCPI">HMC8012 1 SCPI</td> -->
+
 					<td name="HMC8012_1_WS">HMC8012 1 WS</td>
 					<td name="HMC8012_1_SCPI">HMC8012 1 SCPI</td>
 				</tr>
@@ -98,7 +97,6 @@
 
 		async function f1() {
 			var all5Sec = 4;
-//			await wait(500);
 
 			await expectResult(scpiWS, '*IDN?','^HAMEG,HMC8012.*',1000).catch((err) => { logger.warn(err.stringify());	});
 			updateIndicator("HMC8012_1_SCPI", Indicator.INDICATOR_OK);
@@ -106,14 +104,14 @@
 			var result = await expectResult(scpiWS, 'HCOPy:DATA?','.*base64.*',10000).catch((err) => { logger.warn(err.stringify());	});
 			updateImage("HMC8012", result.data);
 		
-
-//			await expectResult(scpiWS, 'CALCulate:STATe ON','.*',1000).catch((err) => { logger.warn("aaaaaa" + err.stringify()); });
+// Initialisation is not ok yet - need to check from the HMC8012 how to access WS without having opend the HMC's Web console before
+//			await expectResult(scpiWS, 'CALCulate:STATe ON','.*',1000).catch((err) => { logger.warn(err.stringify()); });
 //			await wait(500);
-//			await expectResult(scpiWS, 'CALC:FUNC POW','.*',1000).catch((err) => { logger.warn("aaaaaa2" + err.stringify());	});
+//			await expectResult(scpiWS, 'CALC:FUNC POW','.*',1000).catch((err) => { logger.warn(err.stringify());	});
 //			await wait(500);
 			
 			while(true) {
-				var result =  await expectResult(scpiWS, 'CALCulate:POWer?','^[-.0-9].*',1000).catch((err) => { logger.warn("aaaaaa3" + err.stringify());	});
+				var result =  await expectResult(scpiWS, 'CALCulate:POWer?','^[-.0-9].*',1000).catch((err) => { logger.warn(err.stringify());	});
 				if(result.result) {
 					updateIndicator("HMC8012_1_SCPI", Indicator.INDICATOR_OK);
 					Graph.update("Power","Power", parseFloat(result.data) * 1000);	

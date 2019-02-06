@@ -28,8 +28,8 @@
     "xpath": "0.0.27"
   },
   "devDependencies": {
-    "electron-packager": "^12.1.0",
-    "electron": "^2.0.0",
+    "electron": "^2.0.8",
+    "electron-packager": "^13.0.1",
     "electron-rebuild": "^1.8.2"
   }
 }
