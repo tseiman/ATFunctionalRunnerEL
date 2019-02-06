@@ -1,0 +1,146 @@
+<atrun>
+	<head>
+		<name>9Simple SCPI command test</name>
+		<description>Simple commands for R&amp;S HMC8012 as test for SCPI over TCP</description>
+		<author>TS</author>
+		<date>201902-01 23:25:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+		<indicator>
+			<table>
+				<tr>
+			<!-- 		<td name="HMC8012_1_TCP">HMC8012 1 TCP</td>
+					<td name="HMC8012_1_SCPI">HMC8012 1 SCPI</td> -->
+					<td name="HMC8012_1_WS">HMC8012 1 WS</td>
+					<td name="HMC8012_1_SCPI">HMC8012 1 SCPI</td>
+				</tr>
+			</table>
+		</indicator>
+		<graphs>
+			<graph type="line" name="Power" refresh="2000">
+				<title>Power (mW)</title>
+				<data displayLegend="true">
+					<set name="Power" borderColor="rgba(255, 0, 0, 1)" backgroundColor="rgba(255, 0, 0 , 0.2)" lineTension="0.1" backgroundColorFill="true" pointRadius="0" pointHoverRadius="4">
+						<label>mW</label>
+					</set>
+				</data>
+				<scales>
+					<xaxes tooltipFormat="ll HH:mm:ss.SSS" display="true">
+						<label display="false">time</label>
+					</xaxes>
+					<yaxes suggestedMin="0" suggestedMax="1500" display="true">
+						<label display="true">mW</label>
+					</yaxes>
+				</scales>
+			</graph>
+
+
+		</graphs>
+
+		<image name="HMC8012" src="" />
+
+	</client>
+	<server>
+
+		<script>	<![CDATA[  
+		function wait(delay) {
+		    return new Promise(function(resolve, reject) {
+		        setTimeout(resolve, delay);
+		    });
+		}
+		
+		
+		function callbackProxyForwarderWS(data) {		
+ 			if(scpiWS.callbackProxyForwarder  !== null) { scpiWS.callbackProxyForwarder(scpiWS,data) ; }
+		}
+		
+		
+		var scpiWS = getNewScpi({remoteHost: "192.168.2.142", port: 80, name: "HMC8012_1__ws", type: 'ws'},callbackProxyForwarderWS,{ intUrl: '/terminal.html' form: { password: 'XXX', submit: 'webaccess' }});
+		scpiWS.callbackProxyForwarder = null;
+		scpiWS.open();
+		
+		
+		
+		function expectResult(scpi,cmd,expect,timeout) {
+			
+			scpi.write(cmd);
+		
+			return new Promise(function(resolve, reject) {
+			
+				if(timeout !== undefined) { 
+					setTimeout(function() { resolve({data: "timeout", result: false}); }, timeout); 
+				}
+				scpi.callbackProxyForwarder = function (scpi, data) { 
+					var re = new RegExp(expect);
+					
+					if (re.test(data)) {
+						resolve({data: data, result: true});  
+					}
+				}
+			});	
+		}
+		
+
+		
+		updateIndicator("HMC8012_1_SCPI", Indicator.INDICATOR_UNKNOWN);
+		updateIndicator("HMC8012_1_WS", Indicator.INDICATOR_UNKNOWN);
+		
+		scpiWS.setOnOpen(function () {
+			updateIndicator("HMC8012_1_WS", Indicator.INDICATOR_OK);
+		});
+		scpiWS.setOnClose(function () {
+			updateIndicator("HMC8012_1_WS", Indicator.INDICATOR_FAILED);
+			exit(0);
+		});
+
+		async function f1() {
+			var all5Sec = 4;
+//			await wait(500);
+
+			await expectResult(scpiWS, '*IDN?','^HAMEG,HMC8012.*',1000).catch((err) => { logger.warn(err.stringify());	});
+			updateIndicator("HMC8012_1_SCPI", Indicator.INDICATOR_OK);
+
+			var result = await expectResult(scpiWS, 'HCOPy:DATA?','.*base64.*',10000).catch((err) => { logger.warn(err.stringify());	});
+			updateImage("HMC8012", result.data);
+		
+
+//			await expectResult(scpiWS, 'CALCulate:STATe ON','.*',1000).catch((err) => { logger.warn("aaaaaa" + err.stringify()); });
+//			await wait(500);
+//			await expectResult(scpiWS, 'CALC:FUNC POW','.*',1000).catch((err) => { logger.warn("aaaaaa2" + err.stringify());	});
+//			await wait(500);
+			
+			while(true) {
+				var result =  await expectResult(scpiWS, 'CALCulate:POWer?','^[-.0-9].*',1000).catch((err) => { logger.warn("aaaaaa3" + err.stringify());	});
+				if(result.result) {
+					updateIndicator("HMC8012_1_SCPI", Indicator.INDICATOR_OK);
+					Graph.update("Power","Power", parseFloat(result.data) * 1000);	
+				} else {
+					updateIndicator("HMC8012_1_SCPI", Indicator.INDICATOR_FAILED);
+					Graph.update("Power","Power", -120);	
+					exit(0);
+				}
+				logger.norm("received data: " + parseFloat(result.data));
+				
+				if(all5Sec > 5) {
+					var result = await expectResult(scpiWS, 'HCOPy:DATA?','.*base64.*',10000).catch((err) => { logger.warn(err.stringify());	});
+					updateImage("HMC8012", result.data);
+					all5Sec = 0;
+				}
+				++all5Sec; 
+				await wait(1000);			
+			}
+			
+		}
+		f1();
+	
+		]]></script>
+
+
+	</server>
+
+
+
+</atrun>

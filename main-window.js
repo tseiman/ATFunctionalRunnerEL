@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron');
+const {app, BrowserWindow,ipcMain} = require('electron');
 
 const WebSocketServer 	 = require('./server-scripts/websocket-server.js');
 const Logger 			 = require('./server-scripts/logger-server.js');
@@ -46,6 +46,7 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null;
   });
+  
 }
 
 // This method will be called when Electron has finished
@@ -70,9 +71,19 @@ app.on('activate', function () {
   }
 })
 
+
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
+
+ipcMain.on('print-message', function (event, arg) {
+	if(websocketServer.isNotRunning()) {
+		console.log("Printing !");
+		mainWindow.webContents.print({printBackground:false});
+	} else {
+		console.log("Print only if not running");		
+	}
+});
 
 
 

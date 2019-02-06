@@ -233,6 +233,10 @@ html, body {
 	margin-left: 20px;
 	margin-bottom: 10px;
 }
+.button-wrap > button {
+/*	margin-left: 20px; */
+	margin-bottom: 10px;
+}
 
 .output-wrap {
 	margin-left: 20px;

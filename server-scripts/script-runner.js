@@ -5,12 +5,16 @@
 
 const vm = require("vm");
 const SerialIO				 = require('./serial-io.js');
+const ScpiClient				 = require('./scpi-client.js');
 const Https				 = require('https');
 const Http				 = require('http');
 var Querystring = require('querystring');
 
 var script = vm.createScript( process.argv[2] );
 
+
+var inputEventHandler = undefined;
+var buttonEventHandler = undefined;
 
 
 class ProcessLogger {
@@ -21,6 +25,17 @@ class ProcessLogger {
 	LogWarn(message) { process.send({type: "log", crit: "warn", msg: message}); 	}
 }
 
+function messageProxy(data) {
+	switch(data.type ) {
+		case 'INPUT-UPDATE':
+			if(inputEventHandler !== undefined) inputEventHandler(data);
+		break;
+		case 'BUTTON-CLICK':
+			if(buttonEventHandler !== undefined) buttonEventHandler(data);
+		break;
+	}
+}
+process.on('message',messageProxy);
 
 var obj = { 
 //		sendResult:function (result) { process.send(result); process.exit(0); }, 
@@ -45,11 +60,15 @@ var obj = {
 		},
 		getNewSerial : function(config)  { return new SerialIO(config,new ProcessLogger()); },
 		https : Https,		
-		http :  Http,		
+		http :  Http,
+		getNewScpi : function(config,callback)  { return new ScpiClient(config,new ProcessLogger(),callback); },
+		updateImage: function(name,data) { process.send({type: "updateImage", name: name, data: data}); },
 		querystring :  Querystring,
 		Buffer: Buffer,
 		exit: function(code) { process.send({type: "exit", code: code}); },
-		getInputEvent:  function(callback) { process.on('message',callback); }
+		getInputEvent:  function(callback) { inputEventHandler = callback; },
+		getButtonEvent: function(callback) { buttonEventHandler = callback; },
+		getInputVal:  function(name) { process.send({type: "getInputVal", name: name}); }
 		
 };
 var context = vm.createContext(obj);

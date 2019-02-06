@@ -4,10 +4,10 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <link type="text/css" href="css/main.css" rel="stylesheet">
+<link type="text/css" href="css/highlight.css" rel="stylesheet">
 <link type="text/css" href="ui/jquery-ui.min.css" rel="stylesheet" />
-<link type="text/css"
-	href="ui/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css"
-	rel="stylesheet" />
+<link type="text/css" href="ui/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css" rel="stylesheet" />
+
 
 <script>if (typeof module === 'object') {window.module = module; module = undefined;}</script>
 <script language="javascript" type='text/javascript' src="js/jquery.min.js"></script>
@@ -22,11 +22,14 @@
 <script language="javascript" type='text/javascript' src="js/Chart.bundle.js"></script>
 <script language="javascript" type='text/javascript' src="js/chart-linechart.js"></script>
 <script language="javascript" type='text/javascript' src="js/button.js"></script>
+<script language="javascript" type='text/javascript' src="js/image.js"></script>
 <script language="javascript" type='text/javascript' src="js/input.js"></script>
 <script language="javascript" type='text/javascript' src="js/output.js"></script>
+<script language="javascript" type='text/javascript' src="js/highlight-code.js"></script>
 <script language="javascript" type='text/javascript' src="js/jspdf.debug.js"></script>
 <script language="javascript" type='text/javascript' src="js/jszip.min.js"></script>
 <script language="javascript" type='text/javascript' src="js/jszip-utils.min.js"></script>
+<script language="javascript" type='text/javascript' src="js/highlight.pack.js"></script>
 <script language="javascript" type='text/javascript' src="js/main.js"></script>
 <script>if (window.module) module = window.module;</script>
 
@@ -39,17 +42,18 @@
 			AT Functional JS Runner - <span id="runnderfile-info">no file
 				loaded</span> 
 				<button class="ui-icon ui-icon-reload appexec" id="reload-file"></button> 
+		  		<button class="ui-icon ui-icon-print appexec" id="Print"></button> 
+	 
 
 				<span class="ui-icon ui-icon-grip-dotted-vertical appindicators"></span>
 				<span class="ui-icon ui-icon-link appindicators" id="serverlink"></span> 
 
 				<span class="ui-icon ui-icon-grip-dotted-vertical" id="seperator-appexec2"></span>
-<!-- 
-		  		<button class="ui-icon ui-icon-file-pdf appexec" id="toPdf"></button> 
-	 -->
+
 		  		<button class="ui-icon ui-icon-arrow-4 appexec" id="move-widgets"></button> 
 
 				<span class="ui-icon ui-icon-grip-dotted-vertical" id="seperator-appexec"></span>
+				
 				<button class="ui-icon ui-icon-stop appexec" id="server-stop-exec"></button> 
 				<button class="ui-icon ui-icon-seek-end appexec" id="server-start-exec"></button> 				
 
@@ -61,6 +65,11 @@
 
 
 		</h3>
+		
+		<div id="dialog-confirm-print-n-stop" title="Warning">
+  			<p><span class="ui-icon ui-icon-alert" style="float:left; margin:12px 12px 20px 0;"></span>To proceed execution needs to be stopped before.</p>
+		</div>
+		
 		<div id="space"><!-- here all dynamic content is placed -->
 			<!-- 	<div class="chart-wrapper"><canvas id="test-visualization" ></canvas></div>
 	 -->	

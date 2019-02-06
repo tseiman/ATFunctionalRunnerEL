@@ -156,6 +156,13 @@ class WebSocketServer {
 			result = true;
 		} catch (e) {  }
 	}
+	isNotRunning() {
+		if(this.serverConfig === undefined) return true;
+		if(this.serverConfig.getCodeEval() === undefined) return true;
+		
+		
+		return this.serverConfig.getCodeEval().isDead();
+	}
 }
 
 

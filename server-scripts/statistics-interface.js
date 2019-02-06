@@ -28,10 +28,24 @@ class StatisticsInterface {
     static get INDICATOR_UNKNOWN() { return 1; }
     static get INDICATOR_OK() { return 2; }
     static get INDICATOR_FAILED() { return 3; }
-	
+
+    
+    getInputVal(name) {
+//		console.log("indicator: " + name + ", state: " + state);
+		var data = {time:  this.getTimeStamp(), type: 'getInputVal' , name: name}
+		try { this.ws.send(JSON.stringify(data)); } catch(e) { console.log(e); }
+	}
+
+    
 	updateIndicator(name, state) {
 //		console.log("indicator: " + name + ", state: " + state);
 		var data = {time:  this.getTimeStamp(), type: 'statistics-indicator' , name: name, state : state}
+		try { this.ws.send(JSON.stringify(data)); } catch(e) { console.log(e); }
+	}
+    
+	updateImage(name, value) {
+		console.log("image: " + name );
+		var data = {time:  this.getTimeStamp(), type: 'statistics-image' , name: name, data : value}
 		try { this.ws.send(JSON.stringify(data)); } catch(e) { console.log(e); }
 	}
 

@@ -29,11 +29,18 @@ class CodeEval {
 			
 		//	self.logger.LogNormal("code-eval.worker" +  querystring.stringify(data));
 			switch (data.type) {
+			case "getInputVal":
+				self.statisticsInterface.getInputVal(data.name);
+				break;	
 			case "updateIndicator":
 				self.statisticsInterface.updateIndicator(data.name,data.state);
 				break;	
 			case "updateGraph":
 				self.statisticsInterface.updateGraph(data.name,data.set,data.value);
+				break;	
+			case "updateImage":
+		//		console.log("code-eval.worker" +  querystring.stringify(data));	
+				self.statisticsInterface.updateImage(data.name,data.data);
 				break;	
 			case "updateTextIO":				
 				self.statisticsInterface.updateTextIO(data.name,data.message);
@@ -118,7 +125,7 @@ class CodeEval {
 
 	postMessage(data) {
 		var self = this;
-		self.logger.LogNormal("code-eval.postMessage:"+ querystring.stringify(data));
+	//	self.logger.LogNormal("code-eval.postMessage:"+ querystring.stringify(data));
 
 		if(self.worker === undefined) return;
 		self.worker.send(data);

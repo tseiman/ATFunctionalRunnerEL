@@ -14,6 +14,12 @@
 			<input type="text" name="testin" inputcheck="^[1-9][0-9]*$" caption="TestIn 1">0</input>
 			<input type="text" name="testin2" inputcheck="^[1-9][0-9]*$" caption="TestIn 2">0</input>
 
+<code type="javascript" name="testcode"><![CDATA[  
+	import hljs from 'highlight.js/lib/highlight';
+	import javascript from 'highlight.js/lib/languages/javascript';
+	hljs.registerLanguage('javascript', javascript);
+]]></code>
+
 </section-item>
 <section-item head="Section Out" id="sec_2">
 			<output type="text" name="testout" caption="Given value 1">0</output>
@@ -23,7 +29,8 @@
 	</section-item>
 </section>	
 			<input type="password" name="testin3" inputcheck=".*" caption="Password test" >12350</input>
-	<button name="testbutton">Button test</button>
+	<button name="post-test">Post test</button>
+	<button name="getData">GetData test</button>
 	
 	</client>
 	<server>
@@ -39,6 +46,7 @@
 		}
 		
 		getInputEvent(function( data ) {
+
 			if(data.valid) {
 				inputval[data.input] = data.value;
 				if(data.input ==='testin') { updateTextIO("testout",data.value); }
@@ -47,6 +55,8 @@
 				if(inputval["testin"] !== undefined && inputval["testin2"] !== undefined)	{ calculateResult(); }
 			}
 		});
+		
+
 		
 		
 		function testEvent() {
@@ -74,18 +84,32 @@ var post_data = querystring.stringify({ test: "sometest" });
       }
   };
 
-  // Set up the request
-  var post_req = https.request(post_options, function(res) {
-      res.setEncoding('utf8');
-      res.on('data', function (chunk) {
-          logger.norm('Response: ' + chunk);
-      });
-  });
 
-  // post the data
-  post_req.write(post_data);
-  post_req.end();
 		
+		
+		getButtonEvent(function( data ) {
+			if(data.input ==='post-test') {
+			
+					// Set up the request
+				  var post_req = https.request(post_options, function(res) {
+				      res.setEncoding('utf8');
+				      res.on('data', function (chunk) {
+				          logger.norm('Response: ' + chunk);
+				      });
+				  });
+				
+				  // post the data
+			
+				  post_req.write(post_data);
+				  post_req.end();
+			}
+			
+			if(data.input ==='getData') {
+			  logger.norm('Try to obtain data');
+			  getInputVal('testin');
+			}
+		
+		});
 		
 		]]></script>
 

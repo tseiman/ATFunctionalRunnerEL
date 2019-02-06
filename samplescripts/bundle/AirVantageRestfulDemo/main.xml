@@ -1,0 +1,145 @@
+<atrun>
+	<head>
+		<name>AirVantage RestFul API Example</name>
+		<description>Demonstrates how to obtain a Token and how to query the API</description>
+		<author>TS</author>
+		<date>2018-01-21 21:33:00</date>
+		<version>0.1</version>
+	</head>
+
+	<client>
+		<maxlog>200</maxlog>
+		<section name="first-section">
+			<section-item head="1. Configuring AirVantage Client Access" id="sec_1">
+				To connect to AirVantage RestFul API you need first to obtain a ClientID and ClientSecret. This can be requested via the AirVantage (AVS) Portal:
+				<ol>
+					<li>Login to your <i>AVS</i> account</li>
+					<li>Navigate in the top navigation bar to Develop&#8594; TO BE DONE !!!!</li>
+					<li>Copy ClientID and ClientSecret from the TO BE DONE !!!!
+						<image name="avs" src="img/avs-1.png" />
+					
+					</li>				
+				</ol>
+			</section-item>
+			<section-item head="2. Obtaining the Token" id="sec_2">
+						<input type="text" name="AccessTokenURL" inputcheck=".*" caption="Access Token URL">https://eu.airvantage.net/api/oauth/token</input>
+						<input type="text" name="Username" inputcheck=".*" caption="Username">TSchmidt@sierrawireless.com</input>
+						<input type="password" name="Password" inputcheck=".*" caption="Password" >FillSomethingIn</input>
+						<input type="text" name="ClientID" inputcheck="^[0-9a-fA-F]{32}$" caption="ClientID">e5fec5e6197742c29db9ed01a91e74b2</input>
+						<input type="password" name="ClientSecret" inputcheck=".*" caption="Client Secret" >FillSomethingIn</input>
+						<output type="text" name="TokenURL" caption="Parameterized URL to obtain token">https://</output>
+						<button name="btnGetToken">Get Token</button>
+						
+			</section-item>
+		
+		
+
+			
+			
+		</section>	
+	</client>
+
+
+	<server>
+
+		<script src="main.js" />
+		<script><![CDATA[ 
+		logger.norm('loaded inline script');
+		
+		]]></script>
+		
+<!--  script><![CDATA[ 
+/**
+ * http://usejsdoc.org/
+ */
+
+//var inputval = {};
+
+var accessTokenData = {
+		AccessTokenURL : "",
+		Username : "",
+		Password : "",
+		ClientID : "",
+		ClientSecret : ""
+};
+
+
+getInputEvent(function( data ) {
+	logger.norm('Response: ' + querystring.stringify(data));
+
+	if(data.valid) {
+		switch(data.input) {
+		case 'AccessTokenURL':
+			accessTokenData.AccessTokenURL = data.value;
+			break;
+		case 'Username':
+			accessTokenData.Username = data.value;
+			break;
+		case 'Password':
+			accessTokenData.Password = data.value;
+			break;
+		case 'ClientID':
+			accessTokenData.ClientID = data.value;
+			break;
+		case 'ClientSecret':
+			accessTokenData.ClientSecret = data.value;
+			break;
+		}
+		updateTextIO("TokenURL", accessTokenData.AccessTokenURL + '?grant_type=password&username=' + accessTokenData.Username + '&password=' + accessTokenData.Password + '&client_id=' + accessTokenData.ClientID + '&client_secret=' + accessTokenData.ClientSecret); 
+	}
+});
+
+
+
+
+
+
+var post_data = querystring.stringify({ test: "sometest" });
+
+// An object of options to indicate where to post to
+var post_options = {
+		host: 'postman-echo.com',
+		port: '443',
+		path: '/post',
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/x-www-form-urlencoded',
+			'Content-Length': Buffer.byteLength(post_data)
+		}
+};
+
+
+
+
+getButtonEvent(function( data ) {
+	switch(data.input) {
+	case 'btnGetToken':
+		/*				// Set up the request
+					  var post_req = https.request(post_options, function(res) {
+					      res.setEncoding('utf8');
+					      res.on('data', function (chunk) {
+					          logger.norm('Response: ' + chunk);
+					      });
+					  });
+
+					  // post the data
+
+					  post_req.write(post_data);
+					  post_req.end(); */
+		break;
+	}
+
+});
+
+getInputVal('AccessTokenURL');
+getInputVal('Username');
+getInputVal('Password');
+getInputVal('ClientID');
+getInputVal('ClientSecret');
+	]]></script>  -->
+
+</server>
+
+
+
+</atrun>

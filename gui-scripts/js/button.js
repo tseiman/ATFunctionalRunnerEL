@@ -10,7 +10,7 @@ class Button {
 		var self = this;
 		this.value = dom.evaluate( './/button[@name="' + name + '"]', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
 
-		$(apped_to).append('<button id="button_' + name +'">' + self.value + '</button>')
+		$(apped_to).append('<div class="dragable button-wrap"><button id="button_' + name +'">' + self.value + '</button></div>')
 		
 		$( '#button_' + name ).button();
 		

@@ -4,10 +4,11 @@
 
 class Input {
 	
-	constructor(name, dom, append_to_id) {
 
+	constructor(name, dom, append_to_id) {
+		this.valid = false;
 		var append_to = (append_to_id === undefined) ? "#space" : append_to_id;
-		console.log("input append to:" + append_to);
+	//	console.log("input append to:" + append_to);
 		this.name = name;
 		var self = this;
 		this.caption = dom.evaluate( './/input[@name="' + name + '"]/@caption', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
@@ -21,7 +22,7 @@ class Input {
 		if(this.type !== undefined) {
 			passwordType = (this.type === "password") ? 'type="password">&nbsp;<span class="ui-icon ui-icon-eye appindicators" id="pw_hidden_' + name +'"></span' : '';
 		} 
-		$(append_to).append('<div class="dragable input-wrap">' + self.caption + '<input id="' + name + '" class="ui-widget ui-corner-all" ' + passwordType +'><span id="' + name + '-warning" class="ui-icon ui-icon-alert" style="visibility: hidden;"></span></input></div>');
+		$(append_to).append('<div class="item-content dragable input-wrap">' + self.caption + '<input id="' + name + '" class="ui-widget ui-corner-all" ' + passwordType +'><span id="' + name + '-warning" class="ui-icon ui-icon-alert" style="visibility: hidden;"></span></input></div>');
 
 		$( '#pw_hidden_' + name).mousedown(function() {
 			$('#' + name).attr('type', 'text'); 
@@ -37,19 +38,37 @@ class Input {
 		$( "#" + name ).val(this.value);
 		
 		$( "#" + name ).on('input', function() {
-			let valid = false;
+			this.valid = false;
 			if($( "#" + name ).val().match(self.regex)) {
 				$( "#" + name ).removeClass('ui-state-error');
 				$( "#" + name + "-warning" ).css('visibility','hidden');
-				valid = true;
+				this.valid = true;
 			} else {
 				$( "#" + name ).addClass('ui-state-error');
 				$( "#" + name + "-warning" ).css('visibility','visible');
 			}
-			socket_log.send(JSON.stringify({type: 'INPUT-UPDATE', input: name, valid: valid, value: $( "#" + name ).val()}));
+			socket_log.send(JSON.stringify({type: 'INPUT-UPDATE', input: name, valid: this.valid, value: $( "#" + name ).val()}));
 		});
 		
+		
 	}
+
+	getInput() {
+		this.valid = false;
+		var self = this;
+		if($( "#" + this.name ).val().match(self.regex)) {
+			$( "#" + this.name ).removeClass('ui-state-error');
+			$( "#" + this.name + "-warning" ).css('visibility','hidden');
+			this.valid = true;
+		} else {
+			$( "#" + this.name ).addClass('ui-state-error');
+			$( "#" + this.name + "-warning" ).css('visibility','visible');
+		}
+		socket_log.send(JSON.stringify({type: 'INPUT-UPDATE', input: this.name, valid: this.valid, value: $( "#" + this.name ).val()}));		
+	}
+
+
+
 	
 
 }

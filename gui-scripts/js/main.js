@@ -1,4 +1,5 @@
 
+const { ipcRenderer } = require('electron');
 
 var socket_log = new ReconnectingWebSocket( "ws://localhost:8888/log", "log_protocol" );
 
@@ -13,7 +14,7 @@ var config = new Config();
 var wsOK = 0;
 var linkOk = false;
 var remoteConfigOk = false;
-
+var isNotRunning = true;
 
 
 function loadFile() {
@@ -68,30 +69,21 @@ socket_log.onmessage = function(msg) {
 		switch (data.type) {
 		case "PING":
 			--wsOK;
-				console.log("got PING : data.configok" + data.configok + ", data.isNotRunning" + data.isNotRunning) ;
+		//		console.log("got PING : data.configok" + data.configok + ", data.isNotRunning" + data.isNotRunning) ;
 			
 //			let inputlist = config.getInputs();
-
+			isNotRunning = data.isNotRunning;
 			if(data.configok && data.isNotRunning) {
 				$( "#server-start-exec" ).button( "enable" );
 			} else {
 				$( "#server-start-exec" ).button( "disable" );
-			}
+			} 
+
 			if(data.configok && (!data.isNotRunning)) {
 				$( "#server-stop-exec" ).button( "enable" );						
-/*				for(var index in inputlist) {
-					$( "#" + index ).prop('disabled', false);
-					$( "#" + index ).removeClass(".ui-state-disabled");
-
-				}
-*/				
 			} else {
 				$( "#server-stop-exec" ).button( "disable" );
-/*				for(var index in inputlist) {
-					$( "#" + index ).prop('disabled', true);
-					$( "#" + index ).addClass(".ui-state-disabled");
-				} */
-			}
+			} 
 			remoteConfigOk = data.configok;
 			
 			checkConfig();				
@@ -146,6 +138,18 @@ socket_log.onmessage = function(msg) {
 				 if(config.hasOutputText(data.name))  config.getOutputText(data.name).updateOutput(data.message);
 			}
 			break;
+		case "getInputVal":
+			if(config.configFile !== null) {
+				 if(config.hasInput(data.name))  config.getInput(data.name).getInput();
+			}
+			break;
+			
+		case "statistics-image":
+	//		console.log({ data: data});
+			if(config.configFile !== null) config.getImage(data.name).update(data.data);
+//			console.log(config.getImage(data.name));
+			break;
+
 		default:
 			logger.log(data);
 		}
@@ -222,15 +226,17 @@ $( document ).ready(function() {
 		loadFile();
 	});
 	
-	$( "#toPdf" ).button({
+	$( "#Print" ).button({
 	}).click(function(){ 
-		var doc = new jsPDF();
-	    doc.fromHTML($('#space').html(), 15, 15, {
-	        'width': 170,
-	  //          'elementHandlers': specialElementHandlers
-	    });
-	    doc.save('sample-file.pdf');
 		
+		if(!isNotRunning) {
+			 $("#dialog-confirm-print-n-stop").dialog('open');
+			
+		} else {
+			ipcRenderer.send('print-message', 'print');			
+		}
+		
+		// remote.getCurrentWindow().rendererSideName.myFunction();
 		
 	});
 	
@@ -247,15 +253,44 @@ $( document ).ready(function() {
 		} else {
 			$( "#move-widgets" ).addClass("ui-state-active"); 
 			$( "#move-widgets" ).attr('data-checked','true');
-			$( ".dragable" ).draggable({ grid: [ 2, 2 ], disabled: false });
+			$( ".dragable" ).draggable({ 
+				grid: [ 2, 2 ], 
+				disabled: false
+			});
 			$( ".dragable" ).prepend( '<div class="dragable-icon-wrap"><span class="ui-icon ui-icon-arrow-4 dragable-icon">icon</span></div>' );
 			$(".dragable-icon").css("color", $(".ui-state-active").css("background-color"));
 			
 		}
-		console.log($( "#move-widgets" ));
+	//	console.log($( "#move-widgets" ));
+	});
+	
+	$('#space').height($(window).height() - $('#space').offset().top - ($(window).height() - $('#logtext').offset().top) -10 );
+	$( window ).resize(function() {
+		$('#space').height($(window).height() - $('#space').offset().top - ($(window).height() - $('#logtext').offset().top) -10 );
+		
+		
+		
+		$( '.section-item').each(function( index ) {
+			$( this ).height($('#space').height() - $(this).parent().attr('originalHeight') - 36);
+			var self = this;
+			
+		});
+		
 	});
 	
 	
+
+    $( "#dialog-confirm-print-n-stop" ).dialog({
+      modal: true,
+      buttons: {
+        Ok: function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+    $("#dialog-confirm-print-n-stop").dialog('close');
+
+    
 	$( window ).unload(function() {
 //		$( "#exit-nodejs" ).dialog('open');
 		socket_log.send(JSON.stringify({type: 'quit'}));
