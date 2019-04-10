@@ -15,7 +15,6 @@ var wsOK = 0;
 var linkOk = false;
 var remoteConfigOk = false;
 var isNotRunning = true;
-var mySuperLog = false;
 
 function loadFile() {
 	$("#runnderfile-info").text($("#fileLoader").val().replace(/C:\\fakepath\\/i, ''));
