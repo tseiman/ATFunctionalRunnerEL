@@ -15,7 +15,7 @@ var wsOK = 0;
 var linkOk = false;
 var remoteConfigOk = false;
 var isNotRunning = true;
-
+var mySuperLog = false;
 
 function loadFile() {
 	$("#runnderfile-info").text($("#fileLoader").val().replace(/C:\\fakepath\\/i, ''));
@@ -73,6 +73,7 @@ socket_log.onmessage = function(msg) {
 			
 //			let inputlist = config.getInputs();
 			isNotRunning = data.isNotRunning;
+
 			if(data.configok && data.isNotRunning) {
 				$( "#server-start-exec" ).button( "enable" );
 			} else {
@@ -168,8 +169,8 @@ socket_log.onmessage = function(msg) {
 function linkOkCheck() {
 	setTimeout(function () {
 		++wsOK;
-		if(wsOK >= 2) {
-			$("#serverlink").removeClass( "appindicator-green" )		
+		if(wsOK >= 5) {
+			$("#serverlink").removeClass( "appindicator-green" );			
 			$( "#server-start-exec" ).button( "disable" );
 			$( "#server-stop-exec" ).button( "disable" );
 			linkOk =  false;
