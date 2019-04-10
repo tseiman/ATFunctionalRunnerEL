@@ -17,7 +17,7 @@
     "Electron"
   ],
   "author": "Thomas Schmidt",
-  "license": "NoLicense",
+  "license": "Apache-2.0",
   "dependencies": {
     "crc": "^3.7.0",
     "express": "^4.16.3",
