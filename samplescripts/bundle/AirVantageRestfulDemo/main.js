@@ -63,18 +63,19 @@ var post_options = {
 getButtonEvent(function( data ) {
 	switch(data.input) {
 	case 'btnGetToken':
-		/*				// Set up the request
-					  var post_req = https.request(post_options, function(res) {
-					      res.setEncoding('utf8');
-					      res.on('data', function (chunk) {
-					          logger.norm('Response: ' + chunk);
-					      });
-					  });
+		logger.norm('post_data: ' + post_data);
+		// Set up the request
+		var post_req = https.request(post_options, function(res) {
+			res.setEncoding('utf8');
+		    res.on('data', function (chunk) {
+		          logger.norm('Response: ' + chunk);
+		    });
+		});
 
-					  // post the data
+		  // post the data
 
-					  post_req.write(post_data);
-					  post_req.end(); */
+		post_req.write(post_data);
+		post_req.end(); 
 		break;
 	}
 
