@@ -239,6 +239,12 @@ $( document ).ready(function() {
 		// remote.getCurrentWindow().rendererSideName.myFunction();
 		
 	});
+	$( "#DevTools" ).button({
+	}).click(function(){ 
+		
+		ipcRenderer.send('tools-message', 'open');			
+		
+	});
 	
 	$( "#move-widgets" ).button().click(function(){ 
 		

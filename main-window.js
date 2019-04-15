@@ -75,7 +75,6 @@ app.on('activate', function () {
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
 
-
 ipcMain.on('print-message', function (event, arg) {
 	if(websocketServer.isNotRunning()) {
 		console.log("Printing !");
@@ -83,6 +82,10 @@ ipcMain.on('print-message', function (event, arg) {
 	} else {
 		console.log("Print only if not running");		
 	}
+});
+
+ipcMain.on('tools-message', function (event, arg) {
+	mainWindow.webContents.openDevTools();
 });
 
 

@@ -40,6 +40,7 @@ process.on('message',messageProxy);
 var obj = { 
 //		sendResult:function (result) { process.send(result); process.exit(0); }, 
 		setTimeout: function(callback,time) { setTimeout(callback,time); },
+		setInterval: function(callback,time) { setTimeout(callback,time); },
 		console: { log: function(text) { console.log(text); } },
 		updateIndicator: function(name, state) { process.send({type: "updateIndicator", name: name, state: state}); },
 		Graph: {
