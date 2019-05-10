@@ -64,6 +64,7 @@ var obj = {
 		http :  Http,
 		getNewScpi : function(config,callback)  { return new ScpiClient(config,new ProcessLogger(),callback); },
 		updateImage: function(name,data) { process.send({type: "updateImage", name: name, data: data}); },
+		updateTable: function(name,data) { process.send({type: "updateTable", name: name, data: data}); },
 		querystring :  Querystring,
 		Buffer: Buffer,
 		exit: function(code) { process.send({type: "exit", code: code}); },

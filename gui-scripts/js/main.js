@@ -142,12 +142,12 @@ socket_log.onmessage = function(msg) {
 			if(config.configFile !== null) {
 				 if(config.hasInput(data.name))  config.getInput(data.name).getInput();
 			}
-			break;
-			
+			break;			
 		case "statistics-image":
-	//		console.log({ data: data});
 			if(config.configFile !== null) config.getImage(data.name).update(data.data);
-//			console.log(config.getImage(data.name));
+			break;
+		case "statistics-table":
+			if(config.configFile !== null) config.getTables(data.name).update(data.data);
 			break;
 
 		default:
@@ -242,7 +242,7 @@ $( document ).ready(function() {
 	$( "#DevTools" ).button({
 	}).click(function(){ 
 		
-		ipcRenderer.send('tools-message', 'open');			
+		ipcRenderer.send('', 'open');			
 		
 	});
 	

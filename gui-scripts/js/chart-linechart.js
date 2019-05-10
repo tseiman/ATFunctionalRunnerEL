@@ -10,7 +10,7 @@ class LineChart {
 		
 		
 //		this.config = dom.evaluate( './/graph[@name="' + name + '"]', dom, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null ).singleNodeValue;
-		console.log( this.config);
+//		console.log( this.config);
 		this.name = name;
 		var self = this;
 		this.title = dom.evaluate( './/graph[@name="' + name + '"]/title', dom, null, XPathResult.STRING_TYPE, null ).stringValue;
@@ -63,7 +63,7 @@ class LineChart {
 			this.datasets.push(setdata);
 			this.dataQueues[result.snapshotItem(i).value] = new Array();
 				
-		    console.log("graph name: " + name +  ", setname: " + result.snapshotItem(i).value + ", borderColorOfSet:" + borderColorOfSet + ", backgroundColorOfSet:" + backgroundColorOfSet + ", lineTensionOfSet:" + lineTensionOfSet + ", labelOfSet:" + labelOfSet);
+	//	    console.log("graph name: " + name +  ", setname: " + result.snapshotItem(i).value + ", borderColorOfSet:" + borderColorOfSet + ", backgroundColorOfSet:" + backgroundColorOfSet + ", lineTensionOfSet:" + lineTensionOfSet + ", labelOfSet:" + labelOfSet);
 			
 //		    this.datasets[result.snapshotItem(i).value] = new LineChart(result.snapshotItem(i).value, this.configData);
 		}

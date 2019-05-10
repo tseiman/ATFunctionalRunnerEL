@@ -39,8 +39,10 @@ class CodeEval {
 				self.statisticsInterface.updateGraph(data.name,data.set,data.value);
 				break;	
 			case "updateImage":
-		//		console.log("code-eval.worker" +  querystring.stringify(data));	
 				self.statisticsInterface.updateImage(data.name,data.data);
+				break;	
+			case "updateTable":
+				self.statisticsInterface.updateTable(data.name,data.data);
 				break;	
 			case "updateTextIO":				
 				self.statisticsInterface.updateTextIO(data.name,data.message);
@@ -69,7 +71,7 @@ class CodeEval {
 			break;
 
 			default:
-				console.log("unknown command" + data);
+				console.trace("unknown command " + JSON.stringify(data, undefined, 2));
 			}
 			
 		});

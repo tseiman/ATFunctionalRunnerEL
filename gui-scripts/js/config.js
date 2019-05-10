@@ -30,6 +30,7 @@ class Config {
 		this.images = {};
 		this.buttons = {};
 		this.codes = {};
+		this.tables = {};
 	}
 
 
@@ -93,7 +94,7 @@ class Config {
 	
 	
 	loadResource(src) {
-		console.log({ssssssssssssrrc: src});
+//		console.log({ssssssssssssrrc: src});
 		
 		try {
 			let fileContents = fs.readFileSync(src);
@@ -177,8 +178,12 @@ class Config {
 		case "graph":				
 			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			this.graphs[result.snapshotItem(0).value] = new LineChart(result.snapshotItem(0).value, this.configData,append_to_id);
-
 			break;
+		case "table":				
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+			this.tables[result.snapshotItem(0).value] = new Table(result.snapshotItem(0).value, this.configData,append_to_id);
+			break;
+	
 		case "section":
 			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			$("#space").html($("#space").html() +'<div id="accordion_' + result.snapshotItem(0).value + '"></div>');
@@ -532,6 +537,9 @@ class Config {
 	}
 	getImage(name) {
 		return this.images[name];
+	}
+	getTables(name) {
+		return this.tables[name];
 	}
 	
 }
