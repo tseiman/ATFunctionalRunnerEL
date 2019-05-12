@@ -16,42 +16,6 @@ var serverConfig = new Config();
 var logger = new Logger(serverConfig);
 serverConfig.setLogger(logger);
 
-/*
-var serial = new SerialIO(serverConfig);
-
-function myCallback(data) {
-	console.log(">>>" + data);
-}
-
-serial.open(myCallback);
-
-serial.writeln('ATE=0');
-
-
-serial.writeln('ATE=0');
-
-
-function testLoop () {
-	
-	setTimeout(function () {
-		if(serial.isOpen()) {
-			serial.writeln('AT+CPIN?');
-		}
-		testLoop();
-	}, 1000);
-}
-testLoop();
-*/
-/*
-function attSerialCallback(data) {
-	console.log("aaaa callback serial: " + data);
-}
-
-var attSerial = new SerialIO({port: "/dev/tty.usbserial", baud: 115200},logger);
-attSerial.open(attSerialCallback);
-attSerial.writeln("rid");
-//attSerial.close();
-*/
 
 
 var websocketServer = new WebSocketServer(serverConfig);

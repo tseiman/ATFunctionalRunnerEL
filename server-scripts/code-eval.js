@@ -44,6 +44,9 @@ class CodeEval {
 			case "updateTable":
 				self.statisticsInterface.updateTable(data.name,data.data);
 				break;	
+			case "setTableRule":
+				self.statisticsInterface.setTableRule(data.name,data.func);
+				break;	
 			case "updateTextIO":				
 				self.statisticsInterface.updateTextIO(data.name,data.message);
 				break;	

@@ -64,7 +64,10 @@ var obj = {
 		http :  Http,
 		getNewScpi : function(config,callback)  { return new ScpiClient(config,new ProcessLogger(),callback); },
 		updateImage: function(name,data) { process.send({type: "updateImage", name: name, data: data}); },
-		updateTable: function(name,data) { process.send({type: "updateTable", name: name, data: data}); },
+		table: {
+			update:		function(name,data) { process.send({type: "updateTable", name: name, data: data}); },
+			setRule: 	function(name, func) { process.send({type: "setTableRule", name: name, func: func.toString()}); },	
+		},		
 		querystring :  Querystring,
 		Buffer: Buffer,
 		exit: function(code) { process.send({type: "exit", code: code}); },

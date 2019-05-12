@@ -149,6 +149,9 @@ socket_log.onmessage = function(msg) {
 		case "statistics-table":
 			if(config.configFile !== null) config.getTables(data.name).update(data.data);
 			break;
+		case "statistics-table-rule":
+			if(config.configFile !== null) config.getTables(data.name).setRule(data.func);
+			break;
 
 		default:
 			logger.log(data);
@@ -241,9 +244,7 @@ $( document ).ready(function() {
 	});
 	$( "#DevTools" ).button({
 	}).click(function(){ 
-		
-		ipcRenderer.send('', 'open');			
-		
+		ipcRenderer.send('tools-message', 'open');					
 	});
 	
 	$( "#move-widgets" ).button().click(function(){ 
