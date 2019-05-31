@@ -23,7 +23,7 @@ class Config {
 			this.setFileLastModified(configFile.lastModifiedDate);
 
 		}
-
+		this.plugins = {};
 		this.graphs = {};
 		this.inputs = {};
 		this.outputs = {};
@@ -88,6 +88,7 @@ class Config {
 	parseConfig(domTxt) {
 		var parser = new DOMParser();
 		this.configData = parser.parseFromString(domTxt,"text/xml");
+		this.parseConfigHeader();
 		this.parseConfigForClient();
 		this.parseConfigForServer();	
 	}
@@ -147,6 +148,8 @@ class Config {
 
 
 			break;
+		case "testplugin":
+				console.log("testplugin")
 		case "button":
 			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 			this.buttons[result.snapshotItem(0).value] = new Button(result.snapshotItem(0).value, this.configData,append_to_id);
@@ -464,6 +467,29 @@ class Config {
 
 
 
+	parseConfigHeader() {
+		var self = this;
+		if( typeof this.configData === 'undefined') throw('no config data ?!');
+		console.log("parseConfigHeader()");
+		var element = this.configData.evaluate( '//atrun/requireplugin/plugin', this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null );
+		if(element != null) {
+			for (let i=0, length=element.snapshotLength; i<length; ++i) {
+				if(element.snapshotItem(i).nodeName === "plugin" && element.snapshotItem(i).hasAttribute('name')) {
+					var pluginname = element.snapshotItem(i).getAttribute('name');
+					var minversion = element.snapshotItem(i).hasAttribute('minversion') ? element.snapshotItem(i).getAttribute('minversion') : "0";
+					var maxversion = element.snapshotItem(i).hasAttribute('maxversion') ? element.snapshotItem(i).getAttribute('maxversion') : "9999";
+
+					self.plugins[pluginname] = {"name": pluginname, "minversion" : minversion, "maxversion" : maxversion};
+//					console.log({"type": "parseConfigHeader()", "element":  element, "name" : element.snapshotItem(i).getAttribute('name') });
+				}
+			}
+			
+
+		}
+
+				
+
+	}
 
 
 
@@ -540,6 +566,19 @@ class Config {
 	}
 	getTables(name) {
 		return this.tables[name];
+	}
+	
+	getPluginsAsJSON() {
+		var self = this;
+		var pluginList = [];
+		console.log(self.plugins);
+		for (var key in self.plugins) {
+			console.log("loop->" +  key);
+	//		console.log(self.plugins[key]);
+			pluginList.push(self.plugins[key]);
+		}
+		
+		return pluginList;
 	}
 	
 }

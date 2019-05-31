@@ -22,6 +22,7 @@ function loadFile() {
 	if($('#fileLoader' )[0].files &&  $('#fileLoader' )[0].files[0] ) {
 		var configFile = $( '#fileLoader' )[0].files[0];
 		config = new Config(configFile);
+		
 		socket_log.send(JSON.stringify({type: 'NEW FILE', fileName: configFile.name, fileSize: configFile.size, lastModified:configFile.lastModifiedDate }));
 		
 
