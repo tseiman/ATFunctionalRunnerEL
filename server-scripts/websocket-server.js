@@ -52,7 +52,7 @@ class WebSocketServer {
 						}
 						var buf = Buffer.from(data.data, 'base64').toString("ascii");
 						var xmlDoc = new dom().parseFromString(buf ,'text/xml');
-						self.serverConfig.setConfig(xmlDoc);
+						self.serverConfig.setConfig(xmlDoc,data.plugins);
 						break;
 					case "SERVERCONFIG-PULL":
 						

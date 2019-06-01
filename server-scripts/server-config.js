@@ -10,12 +10,13 @@ class Config {
 
 	constructor() {
 		this.config = null;
+		this.plugins = null;
 		this.statisticsInterface = null;
 
 	}
 	
-	setConfig(dom) {
-		
+	setConfig(dom,plugins) {
+		this.plugins = plugins;
 		this.config = dom;
 	}
 	

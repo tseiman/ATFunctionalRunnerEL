@@ -8,6 +8,7 @@ class Config {
 
 	constructor(configFile) {
 		this.ziptype = false;
+		
 		if(!arguments.length) {
 			this.configFile = null;
 			this.configData = "";
@@ -24,6 +25,10 @@ class Config {
 
 		}
 		this.plugins = {};
+		this.pluginTagLookups = {};
+		this.pluginLookups = {};
+		this.pluginClassLookups = {};
+		
 		this.graphs = {};
 		this.inputs = {};
 		this.outputs = {};
@@ -112,12 +117,29 @@ class Config {
 
 	}
 
+	
+	
 
 	parseConfigForClientElements(node,depth,append_to_id) {
 
 		var ldep = depth + 1;
+console.log("Parsing Tags");
 
+		if(node.nodeName in this.pluginTagLookups) {
+			var result = node.ownerDocument.evaluate(".//@name", node, node.ownerDocument.createNSResolver(node.ownerDocument), XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
+		//	this.buttons[result.snapshotItem(0).value] = new Button(result.snapshotItem(0).value, this.configData,append_to_id);
 
+			var mainclassname = this.pluginTagLookups[node.nodeName].pluginconfig.mainclass;
+	console.log(mainclassname);		
+		//	var x = 	window[this.pluginTagLookups[node.nodeName].pluginconfig.mainclass](result.snapshotItem(0).value, this.configData,append_to_id);
+			//			this.pluginLookups[node.nodeName + "." + result.snapshotItem(0).value]
+
+			new this.pluginClassLookups[mainclassname](result.snapshotItem(0).value, this.configData, append_to_id);
+			
+//			this.pluginClassLookups[]
+			console.log("FOUND TAG " + node.nodeName + ", Node Class:" + JSON.stringify(this.pluginTagLookups[node.nodeName].pluginconfig.mainclass));
+			return;
+		}
 
 //		var result = {};
 		switch (node.nodeName) {
@@ -281,42 +303,55 @@ class Config {
 	}
 
 	parseConfigForClient() {
+		var self = this;
 		this.dummyId = 0;
+		
 		if( typeof this.configData === 'undefined') throw('no config data ?!');
 
 		$("#space").empty();
 		var element = this.configData.evaluate( '//atrun/client/maxlog', this.configData, null, XPathResult.NUMBER_TYPE, null );
 
 		if(element != null) {
-			//		console.log(element);
 			if(String(element.numberValue).match(/^([0-9]+)$/)) {
-				//		console.log(element.numberValue);
-
 				logger.setMaxLog(parseInt(element.numberValue));
 			}
 		}
 
+		
+		this.getPluginsAsJSON().forEach(function(element) {
+			
+			self.plugins[element.name].pluginloader = new Pluginloader(self, element);
+			  logger.system("loading plugin: " + element.name);
+			  jQuery.ajax({
+			        url: "../ATplugins/" + element.name + "/.metainfo" ,
+			        dataType: 'json',
+			//        success: self.plugins[element.name].pluginloader.loadPluginItem,
+			        success: $.proxy( self.plugins[element.name].pluginloader.loadPluginItem,self.plugins[element.name].pluginloader),
+			        async: false
+			    });
+		});
+	
 
-
+		
 
 		var element = this.configData.evaluate('//atrun/client/*', this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
-		//	if(element != null) { 
-
-		// let result = this.configData.evaluate("//atrun/client/io/input/@name", this.configData, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
 
 		for (let i=0, length=element.snapshotLength; i<length; ++i) {
 
-			//	console.log({i: i, data: element.snapshotItem(i).nodeName});
 			if(element.snapshotItem(i).nodeName !== "maxlog") {
 				this.parseConfigForClientElements(element.snapshotItem(i),0);
 			}
-//			this.inputs[result.snapshotItem(i).value] = new Input(result.snapshotItem(i).value, this.configData);
 		}
+/*
+		   jQuery.ajax({
+		        url: "ATplugins/" + ,
+		        dataType: 'script',
+		        success: callback,
+		        async: true
+		    });
+*/
+		
 
-		//	}
-
-
-	
 
 	}
 
@@ -385,7 +420,7 @@ class Config {
 				crc32.update(b64enc_data[i]);
 			}
 
-			socket_log.send(JSON.stringify({type: 'SERVERCONFIG-PUSH', data: b64data, crc32: crc32.get() }));
+			socket_log.send(JSON.stringify({type: 'SERVERCONFIG-PUSH', plugins: this.getPluginsAsJSON(), data: b64data, crc32: crc32.get() }));
 		}
 
 	}
@@ -568,12 +603,21 @@ class Config {
 		return this.tables[name];
 	}
 	
+	addPluginTagLookup(tag,plugin) {
+		console.log({"tag" : tag, "plugin" : plugin});
+		this.pluginTagLookups[tag] = plugin;
+	}
+	addPluginClassLookup(name,jsClass) {
+		this.pluginClassLookups[name] = jsClass;
+	}
+	
+	
+	
 	getPluginsAsJSON() {
 		var self = this;
 		var pluginList = [];
-		console.log(self.plugins);
 		for (var key in self.plugins) {
-			console.log("loop->" +  key);
+//			console.log("loop->" +  key);
 	//		console.log(self.plugins[key]);
 			pluginList.push(self.plugins[key]);
 		}
