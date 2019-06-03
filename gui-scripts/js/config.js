@@ -130,7 +130,7 @@ console.log("Parsing Tags");
 		//	this.buttons[result.snapshotItem(0).value] = new Button(result.snapshotItem(0).value, this.configData,append_to_id);
 
 			var mainclassname = this.pluginTagLookups[node.nodeName].pluginconfig.mainclass;
-	console.log(mainclassname);		
+//	console.log(mainclassname);		
 		//	var x = 	window[this.pluginTagLookups[node.nodeName].pluginconfig.mainclass](result.snapshotItem(0).value, this.configData,append_to_id);
 			//			this.pluginLookups[node.nodeName + "." + result.snapshotItem(0).value]
 
@@ -327,6 +327,10 @@ console.log("Parsing Tags");
 			        dataType: 'json',
 			//        success: self.plugins[element.name].pluginloader.loadPluginItem,
 			        success: $.proxy( self.plugins[element.name].pluginloader.loadPluginItem,self.plugins[element.name].pluginloader),
+			        error: function(jqXhr, textStatus) { 
+			        		logger.warn("Could not load Plugin:" + element.name + " - with Error: " + textStatus + "<br/>Please check your script and setup. It will likely fail.<br/>You may check also your plugin folder.");
+			        		console.log("Could not load Plugin:" + element.name + " - with Error: " + textStatus + "Please check your script and setup. It will likely fail. You may check also your plugin folder.");
+			        	},
 			        async: false
 			    });
 		});

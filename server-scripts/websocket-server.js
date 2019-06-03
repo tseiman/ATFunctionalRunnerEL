@@ -98,6 +98,8 @@ class WebSocketServer {
 						self.ws.terminate();
 						break;
 					default:
+						self.logger.LogWarn('A unknown command was received on Server from client side: ' + data.type);
+						console.log('A unknown command was received on Server from client side: ' + data.type);
 					}
 				} catch (e) {
 					console.log(e);
