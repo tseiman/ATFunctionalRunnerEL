@@ -58,7 +58,6 @@ class Table {
 	
 	update(data) {
 		var self = this;
-
 		if(typeof data.cmd === undefined || typeof data.rowID === undefined) {
 			console.trace("invalid table data: " +  JSON.stringify(data, undefined, 2));
 		}
@@ -69,6 +68,7 @@ class Table {
 			if(typeof data.cols  === undefined ) {
 				console.trace("invalid table data: " +  JSON.stringify(data, undefined, 2));
 			}
+//			console.log("adding new table entry");
 //			console.log(data.cols);
 //			self.table.row.add(data.cols).node().dataid = data.rowid;
 			$(self.table.row.add(data.cols).node()).attr('data-id',data.rowid);
@@ -80,6 +80,9 @@ class Table {
 			if(typeof data.cols  === undefined ) {
 				console.trace("invalid table data: " +  JSON.stringify(data, undefined, 2));
 			}
+//			console.log("mod table entry");
+//			console.log(data.cols);
+			
 			self.table.row("tr[data-id='" + data.rowid + "']").data(data.cols).draw();		
 			self.checkData(data.rowid, data.cols);
 			break;

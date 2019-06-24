@@ -62,6 +62,8 @@ var obj = {
 		getNewSerial : function(config)  { return new SerialIO(config,new ProcessLogger()); },
 		https : Https,		
 		http :  Http,
+		Date : Date,
+		Math : Math,
 		getNewScpi : function(config,callback)  { return new ScpiClient(config,new ProcessLogger(),callback); },
 		updateImage: function(name,data) { process.send({type: "updateImage", name: name, data: data}); },
 		table: {

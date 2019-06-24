@@ -84,7 +84,7 @@ class CodeEval {
 			self.logger.LogNormal("Code evaluation exits with code: " + code + " and signal: " + signal);
 			try {
 				self.worker.kill();
-			} catch(e) { console.log(e); }
+			} catch(e) { console.log("ERROR" + e); }
 			self.running = false;
 		});
 
