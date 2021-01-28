@@ -30,7 +30,7 @@
     "fstream": ">=1.0.12"
   },
   "devDependencies": {
-    "electron": "^2.0.8",
+    "electron": "^9.4.0",
     "electron-packager": "^13.0.1",
     "electron-rebuild": "^1.8.2"
   }
